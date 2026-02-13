@@ -1,0 +1,253 @@
+<Page x:Class="EmployeeManagement.DashboardPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Dashboard"
+      Background="#ECF0F1">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Page Title -->
+            <TextBlock Grid.Row="0"
+                      Text="Dashboard"
+                      FontSize="32"
+                      FontWeight="Bold"
+                      Foreground="#2C3E50"
+                      Margin="0,0,0,20"/>
+
+            <!-- Statistics Cards -->
+            <UniformGrid Grid.Row="1" 
+                        Rows="2" 
+                        Columns="4" 
+                        Margin="0,0,0,30">
+                
+                <!-- Total Employees -->
+                <Border Background="#3498DB" 
+                       CornerRadius="10" 
+                       Margin="5" 
+                       Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="👥" 
+                                  FontSize="30" 
+                                  HorizontalAlignment="Center" 
+                                  Margin="0,0,0,10"/>
+                        <TextBlock x:Name="TotalEmployeesText" 
+                                  Text="0" 
+                                  FontSize="24" 
+                                  FontWeight="Bold" 
+                                  Foreground="White" 
+                                  HorizontalAlignment="Center"/>
+                        <TextBlock Text="Total Employees" 
+                                  FontSize="14" 
+                                  Foreground="White" 
+                                  HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Total Departments -->
+                <Border Background="#E67E22" 
+                       CornerRadius="10" 
+                       Margin="5" 
+                       Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="🏢" 
+                                  FontSize="30" 
+                                  HorizontalAlignment="Center" 
+                                  Margin="0,0,0,10"/>
+                        <TextBlock x:Name="TotalDepartmentsText" 
+                                  Text="0" 
+                                  FontSize="24" 
+                                  FontWeight="Bold" 
+                                  Foreground="White" 
+                                  HorizontalAlignment="Center"/>
+                        <TextBlock Text="Departments" 
+                                  FontSize="14" 
+                                  Foreground="White" 
+                                  HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Total Positions -->
+                <Border Background="#9B59B6" 
+                       CornerRadius="10" 
+                       Margin="5" 
+                       Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="💼" 
+                                  FontSize="30" 
+                                  HorizontalAlignment="Center" 
+                                  Margin="0,0,0,10"/>
+                        <TextBlock x:Name="TotalPositionsText" 
+                                  Text="0" 
+                                  FontSize="24" 
+                                  FontWeight="Bold" 
+                                  Foreground="White" 
+                                  HorizontalAlignment="Center"/>
+                        <TextBlock Text="Positions" 
+                                  FontSize="14" 
+                                  Foreground="White" 
+                                  HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Pending Leaves -->
+                <Border Background="#E74C3C" 
+                       CornerRadius="10" 
+                       Margin="5" 
+                       Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="🏖️" 
+                                  FontSize="30" 
+                                  HorizontalAlignment="Center" 
+                                  Margin="0,0,0,10"/>
+                        <TextBlock x:Name="PendingLeavesText" 
+                                  Text="0" 
+                                  FontSize="24" 
+                                  FontWeight="Bold" 
+                                  Foreground="White" 
+                                  HorizontalAlignment="Center"/>
+                        <TextBlock Text="Pending Leaves" 
+                                  FontSize="14" 
+                                  Foreground="White" 
+                                  HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Present Today -->
+                <Border Background="#27AE60" 
+                       CornerRadius="10" 
+                       Margin="5" 
+                       Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="✅" 
+                                  FontSize="30" 
+                                  HorizontalAlignment="Center" 
+                                  Margin="0,0,0,10"/>
+                        <TextBlock x:Name="PresentTodayText" 
+                                  Text="0" 
+                                  FontSize="24" 
+                                  FontWeight="Bold" 
+                                  Foreground="White" 
+                                  HorizontalAlignment="Center"/>
+                        <TextBlock Text="Present Today" 
+                                  FontSize="14" 
+                                  Foreground="White" 
+                                  HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Active Users -->
+                <Border Background="#16A085" 
+                       CornerRadius="10" 
+                       Margin="5" 
+                       Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="👤" 
+                                  FontSize="30" 
+                                  HorizontalAlignment="Center" 
+                                  Margin="0,0,0,10"/>
+                        <TextBlock x:Name="ActiveUsersText" 
+                                  Text="0" 
+                                  FontSize="24" 
+                                  FontWeight="Bold" 
+                                  Foreground="White" 
+                                  HorizontalAlignment="Center"/>
+                        <TextBlock Text="Active Users" 
+                                  FontSize="14" 
+                                  Foreground="White" 
+                                  HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Average Salary -->
+                <Border Background="#F39C12" 
+                       CornerRadius="10" 
+                       Margin="5" 
+                       Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="💰" 
+                                  FontSize="30" 
+                                  HorizontalAlignment="Center" 
+                                  Margin="0,0,0,10"/>
+                        <TextBlock x:Name="AverageSalaryText" 
+                                  Text="$0" 
+                                  FontSize="24" 
+                                  FontWeight="Bold" 
+                                  Foreground="White" 
+                                  HorizontalAlignment="Center"/>
+                        <TextBlock Text="Avg. Salary" 
+                                  FontSize="14" 
+                                  Foreground="White" 
+                                  HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Late Today -->
+                <Border Background="#8E44AD" 
+                       CornerRadius="10" 
+                       Margin="5" 
+                       Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="⏰" 
+                                  FontSize="30" 
+                                  HorizontalAlignment="Center" 
+                                  Margin="0,0,0,10"/>
+                        <TextBlock x:Name="LateTodayText" 
+                                  Text="0" 
+                                  FontSize="24" 
+                                  FontWeight="Bold" 
+                                  Foreground="White" 
+                                  HorizontalAlignment="Center"/>
+                        <TextBlock Text="Late Today" 
+                                  FontSize="14" 
+                                  Foreground="White" 
+                                  HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <!-- Recent Activities -->
+            <Border Grid.Row="2" 
+                   Background="White" 
+                   CornerRadius="10" 
+                   Padding="20">
+                <StackPanel>
+                    <TextBlock Text="Recent Activities"
+                              FontSize="20"
+                              FontWeight="Bold"
+                              Foreground="#2C3E50"
+                              Margin="0,0,0,15"/>
+                    
+                    <ListBox x:Name="RecentActivitiesListBox"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Height="200">
+                        <ListBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📋" FontSize="16" Margin="0,0,10,0"/>
+                                <TextBlock Text="New employee John Doe added to IT Department" FontSize="14"/>
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="✅" FontSize="16" Margin="0,0,10,0"/>
+                                <TextBlock Text="Leave request approved for Jane Smith" FontSize="14"/>
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="⏰" FontSize="16" Margin="0,0,10,0"/>
+                                <TextBlock Text="5 employees checked in today" FontSize="14"/>
+                            </StackPanel>
+                        </ListBoxItem>
+                    </ListBox>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</Page>

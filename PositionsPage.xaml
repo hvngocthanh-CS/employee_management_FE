@@ -1,0 +1,142 @@
+<Page x:Class="EmployeeManagement.PositionsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Positions Management"
+      Background="#ECF0F1">
+
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Page Title -->
+        <TextBlock Grid.Row="0"
+                  Text="Positions Management"
+                  FontSize="32"
+                  FontWeight="Bold"
+                  Foreground="#2C3E50"
+                  Margin="0,0,0,20"/>
+
+        <!-- Search and Add Section -->
+        <Grid Grid.Row="1" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="150"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBox x:Name="SearchTextBox"
+                        Grid.Column="0"
+                        Height="35"
+                        Padding="10"
+                        FontSize="14"
+                        VerticalContentAlignment="Center"
+                        Margin="0,0,10,0">
+                    <TextBox.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="5"/>
+                        </Style>
+                    </TextBox.Resources>
+                </TextBox>
+
+                <Button x:Name="SearchButton"
+                       Grid.Column="1"
+                       Content="Search"
+                       Height="35"
+                       Width="100"
+                       Background="#3498DB"
+                       Foreground="White"
+                       BorderThickness="0"
+                       Click="SearchButton_Click">
+                    <Button.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="5"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </Grid>
+
+            <Button x:Name="AddPositionButton"
+                   Grid.Column="1"
+                   Content="+ Add Position"
+                   Height="35"
+                   Width="120"
+                   Background="#27AE60"
+                   Foreground="White"
+                   BorderThickness="0"
+                   Click="AddPositionButton_Click">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </Grid>
+
+        <!-- Positions List -->
+        <Border Grid.Row="2" 
+               Background="White" 
+               CornerRadius="10"
+               Padding="20">
+            <DataGrid x:Name="PositionsDataGrid"
+                     AutoGenerateColumns="False"
+                     HeadersVisibility="Column"
+                     GridLinesVisibility="None"
+                     Background="White"
+                     RowBackground="White"
+                     AlternatingRowBackground="#F8F9FA"
+                     BorderThickness="0">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" 
+                                       Binding="{Binding Id}" 
+                                       Width="60"/>
+                    <DataGridTextColumn Header="Title" 
+                                       Binding="{Binding Title}" 
+                                       Width="200"/>
+                    <DataGridTextColumn Header="Code" 
+                                       Binding="{Binding Code}" 
+                                       Width="100"/>
+                    <DataGridTextColumn Header="Level" 
+                                       Binding="{Binding Level}" 
+                                       Width="120"/>
+                    <DataGridTextColumn Header="Description" 
+                                       Binding="{Binding Description}" 
+                                       Width="*"/>
+                    <DataGridTemplateColumn Header="Actions" Width="150">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Edit" 
+                                           Width="50" 
+                                           Height="25" 
+                                           Margin="2"
+                                           Background="#F39C12"
+                                           Foreground="White"
+                                           BorderThickness="0"
+                                           Click="EditPosition_Click"
+                                           Tag="{Binding}"/>
+                                    <Button Content="Delete" 
+                                           Width="50" 
+                                           Height="25" 
+                                           Margin="2"
+                                           Background="#E74C3C"
+                                           Foreground="White"
+                                           BorderThickness="0"
+                                           Click="DeletePosition_Click"
+                                           Tag="{Binding}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</Page>
