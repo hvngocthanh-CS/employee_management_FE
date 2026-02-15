@@ -25,7 +25,8 @@
                      Margin="0,0,10,0"
                      Padding="5"/>
 
-            <Button Content="Add"
+            <Button x:Name="AddButton"
+                    Content="Add"
                     Height="30"
                     Width="60"
                     Click="AddButton_Click"

@@ -5,24 +5,43 @@ using System.Text;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
+using EmployeeManagement.Services;
 
 namespace EmployeeManagement
 {
-    public partial class DepartmentsPage : Page   // ? Page, KHÔNG ph?i UserControl
+    public partial class DepartmentsPage : Page   // ? Page, KHï¿½NG ph?i UserControl
     {
         private readonly string _backendUrl = "http://localhost:8000";
 
         public DepartmentsPage()
         {
             InitializeComponent();
+            CheckPermissionsAndSetupUI();
             LoadDepartments();
+        }
+
+        private void CheckPermissionsAndSetupUI()
+        {
+            // Check if user is authenticated
+            if (!UserSessionService.IsAuthenticated)
+            {
+                MessageBox.Show("You need to be logged in to view departments.", "Authentication Required",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Check if user has permission to manage departments
+            if (!UserSessionService.CanManageDepartments)
+            {
+                AddButton.Visibility = Visibility.Collapsed;
+            }
         }
 
         private async void LoadDepartments()
         {
             try
             {
-                using var httpClient = new HttpClient();
+                using var httpClient = UserSessionService.GetAuthenticatedHttpClient();
                 var response = await httpClient.GetAsync($"{_backendUrl}/api/v1/departments");
 
                 if (!response.IsSuccessStatusCode)
@@ -66,7 +85,7 @@ namespace EmployeeManagement
 
             try
             {
-                using var httpClient = new HttpClient();
+                using var httpClient = UserSessionService.GetAuthenticatedHttpClient();
                 var response = await httpClient.PostAsync(
                     $"{_backendUrl}/api/v1/departments",
                     content
@@ -93,7 +112,7 @@ namespace EmployeeManagement
     public class DepartmentDto
     {
         public int id { get; set; }
-        public string name { get; set; }
-        public string description { get; set; }
+        public string name { get; set; } = string.Empty;
+        public string description { get; set; } = string.Empty;
     }
 }

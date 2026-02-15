@@ -7,24 +7,44 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Newtonsoft.Json;
+using EmployeeManagement.Services;
 
 namespace EmployeeManagement
 {
     public partial class PositionsPage : Page
     {
-        private readonly HttpClient httpClient = new HttpClient();
         private readonly string baseUrl = "http://localhost:8000/api/v1";
 
         public PositionsPage()
         {
             InitializeComponent();
+            CheckPermissionsAndSetupUI();
             LoadPositions();
+        }
+
+        private void CheckPermissionsAndSetupUI()
+        {
+            // Check if user is authenticated
+            if (!UserSessionService.IsAuthenticated)
+            {
+                MessageBox.Show("You need to be logged in to view positions.", "Authentication Required",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Check if user has permission to manage positions
+            if (!UserSessionService.CanManagePositions)
+            {
+                AddPositionButton.Visibility = Visibility.Collapsed;
+                // Don't show popup - just hide the button to avoid blocking navigation
+            }
         }
 
         private async void LoadPositions()
         {
             try
             {
+                using var httpClient = UserSessionService.GetAuthenticatedHttpClient();
                 var response = await httpClient.GetAsync($"{baseUrl}/positions");
                 
                 if (response.IsSuccessStatusCode)
@@ -35,8 +55,8 @@ namespace EmployeeManagement
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
-                    MessageBox.Show("You need to be authenticated to view positions.", "Authentication Required",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    // User doesn't have permission - silently handle instead of showing popup
+                    PositionsDataGrid.ItemsSource = new List<Position>();
                 }
                 else
                 {
@@ -108,6 +128,7 @@ namespace EmployeeManagement
         {
             try
             {
+                using var httpClient = UserSessionService.GetAuthenticatedHttpClient();
                 var json = JsonConvert.SerializeObject(positionData);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 
@@ -137,6 +158,7 @@ namespace EmployeeManagement
         {
             try
             {
+                using var httpClient = UserSessionService.GetAuthenticatedHttpClient();
                 var json = JsonConvert.SerializeObject(positionData);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 
@@ -166,6 +188,7 @@ namespace EmployeeManagement
         {
             try
             {
+                using var httpClient = UserSessionService.GetAuthenticatedHttpClient();
                 var response = await httpClient.DeleteAsync($"{baseUrl}/positions/{id}");
                 
                 if (response.IsSuccessStatusCode)

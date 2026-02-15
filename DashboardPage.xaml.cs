@@ -4,21 +4,33 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using EmployeeManagement.Services;
 
 namespace EmployeeManagement
 {
     public partial class DashboardPage : Page
     {
-        private readonly HttpClient httpClient = new HttpClient();
         private readonly string baseUrl = "http://localhost:8000/api/v1";
 
         public DashboardPage()
         {
             InitializeComponent();
-            LoadDashboardData();
+            CheckAuthenticationAndLoadData();
         }
 
-        private async void LoadDashboardData()
+        private async void CheckAuthenticationAndLoadData()
+        {
+            if (!UserSessionService.IsAuthenticated)
+            {
+                System.Windows.MessageBox.Show("You need to be logged in to view dashboard.", "Authentication Required",
+                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                return;
+            }
+
+            await LoadDashboardData();
+        }
+
+        private async Task LoadDashboardData()
         {
             try
             {
@@ -36,6 +48,8 @@ namespace EmployeeManagement
         {
             try
             {
+                using var httpClient = UserSessionService.GetAuthenticatedHttpClient();
+                
                 // Load departments count
                 var departmentsResponse = await httpClient.GetAsync($"{baseUrl}/departments");
                 if (departmentsResponse.IsSuccessStatusCode)

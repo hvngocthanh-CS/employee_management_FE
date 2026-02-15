@@ -14,7 +14,7 @@ namespace EmployeeManagement
 {
     public partial class EmployeesPage : Page
     {
-        private readonly string _backendUrl = "http://localhost:8001";
+        private readonly string _backendUrl = "http://localhost:8000";
         private ObservableCollection<Employee> _employees = new ObservableCollection<Employee>();
         private List<Department> _departments = new List<Department>();
         private List<Position> _positions = new List<Position>();
@@ -30,20 +30,17 @@ namespace EmployeeManagement
 
         private void CheckPermissionsAndSetupUI()
         {
-            // Check if user has permission to create employees
-            if (!UserSessionService.CanCreateEmployee)
-            {
-                AddButton.Visibility = Visibility.Collapsed;
-                ClearButton.Visibility = Visibility.Collapsed;
-            }
-
-            // If employee role, only show their own data
+            // If employee role, only show their own data and hide add functionality
             if (UserSessionService.IsEmployee)
             {
-                // Hide add form for regular employees
-                var addForm = this.FindName("AddEmployeeForm") as Border;
-                if (addForm != null)
-                    addForm.Visibility = Visibility.Collapsed;
+                // Hide entire add employee form
+                AddEmployeeForm.Visibility = Visibility.Collapsed;
+            }
+            else if (!UserSessionService.CanCreateEmployee)
+            {
+                // For other roles without create permission, just hide buttons
+                AddButton.Visibility = Visibility.Collapsed;
+                ClearButton.Visibility = Visibility.Collapsed;
             }
         }
 

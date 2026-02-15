@@ -59,7 +59,8 @@
         </StackPanel>
 
         <!-- Add Employee Form -->
-        <Border Grid.Row="1" 
+        <Border x:Name="AddEmployeeForm"
+               Grid.Row="1" 
                Background="#F8F9FA" 
                BorderBrush="#E9ECEF" 
                BorderThickness="1" 
