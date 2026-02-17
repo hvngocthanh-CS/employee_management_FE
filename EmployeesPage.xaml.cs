@@ -80,7 +80,7 @@ namespace EmployeeManagement
         {
             try
             {
-                using var httpClient = UserSessionService.GetAuthenticatedHttpClient();
+                using var httpClient = new HttpClient();
                 var response = await httpClient.GetAsync($"{_backendUrl}/api/v1/departments/");
                 if (response.IsSuccessStatusCode)
                 {
@@ -94,6 +94,10 @@ namespace EmployeeManagement
                     DepartmentComboBox.DisplayMemberPath = "name";
                     DepartmentComboBox.SelectedValuePath = "id";
                 }
+                else
+                {
+                    MessageBox.Show($"Error loading departments: {response.StatusCode}");
+                }
             }
             catch (Exception ex)
             {
@@ -105,7 +109,7 @@ namespace EmployeeManagement
         {
             try
             {
-                using var httpClient = UserSessionService.GetAuthenticatedHttpClient();
+                using var httpClient = new HttpClient();
                 var response = await httpClient.GetAsync($"{_backendUrl}/api/v1/positions/");
                 if (response.IsSuccessStatusCode)
                 {
@@ -118,6 +122,10 @@ namespace EmployeeManagement
                     PositionComboBox.ItemsSource = _positions;
                     PositionComboBox.DisplayMemberPath = "title";
                     PositionComboBox.SelectedValuePath = "id";
+                }
+                else
+                {
+                    MessageBox.Show($"Error loading positions: {response.StatusCode}");
                 }
             }
             catch (Exception ex)
@@ -132,9 +140,8 @@ namespace EmployeeManagement
             {
                 using var httpClient = UserSessionService.GetAuthenticatedHttpClient();
                 
-                // If employee role, load only their own data
                 string endpoint = UserSessionService.IsEmployee 
-                    ? $"{_backendUrl}/api/v1/employees/me" 
+                    ? $"{_backendUrl}/api/v1/employees/me"
                     : $"{_backendUrl}/api/v1/employees/";
                 
                 var response = await httpClient.GetAsync(endpoint);
@@ -223,17 +230,35 @@ namespace EmployeeManagement
             try
             {
                 using var httpClient = UserSessionService.GetAuthenticatedHttpClient();
-                var response = await httpClient.PostAsync($"{_backendUrl}/api/v1/employees/", content);
+                
+                // Check if we're in edit mode (AddButton.Tag contains employee ID)
+                bool isEditMode = AddButton.Tag is int;
+                
+                HttpResponseMessage response;
+                if (isEditMode)
+                {
+                    int employeeId = (int)AddButton.Tag;
+                    // Update existing employee
+                    response = await httpClient.PutAsync($"{_backendUrl}/api/v1/employees/{employeeId}", content);
+                }
+                else
+                {
+                    // Create new employee
+                    response = await httpClient.PostAsync($"{_backendUrl}/api/v1/employees/", content);
+                }
+                
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show("Employee added successfully!", "Success");
+                    string successMessage = isEditMode ? "Employee updated successfully!" : "Employee added successfully!";
+                    MessageBox.Show(successMessage, "Success");
                     ClearForm();
                     LoadEmployees();
                 }
                 else
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
-                    MessageBox.Show($"Failed to add employee: {errorContent}", "Error");
+                    string errorMessage = isEditMode ? "Failed to update employee" : "Failed to add employee";
+                    MessageBox.Show($"{errorMessage}: {errorContent}", "Error");
                 }
             }
             catch (Exception ex)

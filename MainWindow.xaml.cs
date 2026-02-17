@@ -1,16 +1,22 @@
 using System.Windows;
 using System.Windows.Controls;
 using EmployeeManagement.Services;
+using System.Net.Http;
+using System;
 
 namespace EmployeeManagement
 {
     public partial class MainWindow : Window
     {
+        private readonly string _backendUrl = "http://localhost:8000";
+        
         public MainWindow()
         {
             InitializeComponent();
             
-            // Start with login page
+            // Check backend connection on startup
+            CheckBackendConnection();
+            
             ShowLoginPage();
         }
 
@@ -18,6 +24,24 @@ namespace EmployeeManagement
         {
             Logout();
         }
+
+        #region Backend Connection Check
+        private async void CheckBackendConnection()
+        {
+            try
+            {
+                using var httpClient = new HttpClient();
+                httpClient.Timeout = TimeSpan.FromSeconds(5);
+                
+                var response = await httpClient.GetAsync($"{_backendUrl}/api/v1/health_check");
+                // Backend will log this request via middleware
+            }
+            catch (Exception)
+            {
+                // Connection failed - user will see errors when using features
+            }
+        }
+        #endregion
 
         #region Authentication & Session Management
         public void OnLoginSuccess()
