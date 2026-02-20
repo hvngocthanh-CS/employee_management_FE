@@ -15,7 +15,7 @@ namespace EmployeeManagement
 {
     public partial class LeavesPage : Page
     {
-        private readonly string _backendUrl = "http://localhost:8000";
+        private readonly string _backendUrl = "http://127.0.0.1:8000";
         private ObservableCollection<LeaveRecord> _leaveRecords = new ObservableCollection<LeaveRecord>();
         private int? _selectedEmployeeId = null;
 

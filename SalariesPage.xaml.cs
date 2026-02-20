@@ -15,7 +15,7 @@ namespace EmployeeManagement
 {
     public partial class SalariesPage : Page
     {
-        private readonly string _backendUrl = "http://localhost:8000";
+        private readonly string _backendUrl = "http://127.0.0.1:8000";
         private ObservableCollection<SalaryRecord> _salaryRecords = new ObservableCollection<SalaryRecord>();
         private List<Employee> _employees = new List<Employee>();
         private int? SelectedEmployeeId = null;
@@ -32,7 +32,7 @@ namespace EmployeeManagement
         {
             if (!UserSessionService.IsAuthenticated)
             {
-                MessageBox.Show("You need to be logged in to view salaries.", "Authentication Required",
+                MessageBox.Show("Bạn cần đăng nhập để xem lương.", "Yêu cầu xác thực",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -128,8 +128,8 @@ namespace EmployeeManagement
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error searching employees: {ex.Message}",
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Lỗi khi tìm kiếm nhân viên: {ex.Message}",
+                    "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -219,15 +219,15 @@ namespace EmployeeManagement
                     // Only show error if not a 403 (permission denied) - that's handled by permission check
                     if (response.StatusCode != System.Net.HttpStatusCode.Forbidden)
                     {
-                        MessageBox.Show($"Failed to load salary data: {errorContent}",
-                            "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"Không thể tải dữ liệu lương: {errorContent}",
+                            "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading salary data: {ex.Message}",
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Lỗi khi tải dữ liệu lương: {ex.Message}",
+                    "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -304,7 +304,7 @@ namespace EmployeeManagement
             // Validate inputs
             if (SelectedEmployeeId == null)
             {
-                MessageBox.Show("Please search and select an employee first.", "Validation Error",
+                MessageBox.Show("Vui lòng tìm và chọn nhân viên trước.", "Lỗi xác thực",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -313,14 +313,14 @@ namespace EmployeeManagement
                 !decimal.TryParse(BaseSalaryTextBox.Text, out var baseSalary) || 
                 baseSalary <= 0)
             {
-                MessageBox.Show("Please enter a valid base salary (greater than 0).", "Validation Error",
+                MessageBox.Show("Vui lòng nhập mức lương cơ bản hợp lệ (lớn hơn 0).", "Lỗi xác thực",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (EffectiveFromPicker.SelectedDate == null)
             {
-                MessageBox.Show("Please select an effective from date.", "Validation Error",
+                MessageBox.Show("Vui lòng chọn ngày hiệu lực bắt đầu.", "Lỗi xác thực",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -329,8 +329,8 @@ namespace EmployeeManagement
             if (EffectiveToPicker.SelectedDate != null && 
                 EffectiveToPicker.SelectedDate < EffectiveFromPicker.SelectedDate)
             {
-                MessageBox.Show("Effective To date must be greater than or equal to Effective From date.", 
-                    "Validation Error",
+                MessageBox.Show("Ngày hiệu lực kết thúc phải lớn hơn hoặc bằng ngày hiệu lực bắt đầu.", 
+                    "Lỗi xác thực",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -343,7 +343,7 @@ namespace EmployeeManagement
                     if (EffectiveFromPicker.SelectedDate < hireDate)
                     {
                         MessageBox.Show($"Ng\u00e0y hi\u1ec7u l\u1ef1c l\u01b0\u01a1ng ({EffectiveFromPicker.SelectedDate:yyyy-MM-dd}) ph\u1ea3i >= ng\u00e0y thu\u00ea nh\u00e2n vi\u00ean ({hireDate:yyyy-MM-dd}).",
-                            "Validation Error",
+                            "Lỗi xác thực",
                             MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
@@ -381,8 +381,8 @@ namespace EmployeeManagement
                 
                 if (response.IsSuccessStatusCode)
                 {
-                    string successMessage = isEditMode ? "Salary updated successfully!" : "Salary added successfully!";
-                    MessageBox.Show(successMessage, "Success",
+                    string successMessage = isEditMode ? "Cập nhật lương thành công!" : "Thêm lương thành công!";
+                    MessageBox.Show(successMessage, "Thành công",
                         MessageBoxButton.OK, MessageBoxImage.Information);
                     ClearForm();
                     LoadSalaryData();
@@ -390,14 +390,14 @@ namespace EmployeeManagement
                 else
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
-                    string errorMessage = isEditMode ? "Failed to update salary" : "Failed to add salary";
-                    MessageBox.Show($"{errorMessage}: {errorContent}", "Error",
+                    string errorMessage = isEditMode ? "Không thể cập nhật lương" : "Không thể thêm lương";
+                    MessageBox.Show($"{errorMessage}: {errorContent}", "Lỗi",
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error: {ex.Message}", "Error",
+                MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -471,11 +471,11 @@ namespace EmployeeManagement
             if (sender is Button button && button.Tag is SalaryRecord record)
             {
                 var result = MessageBox.Show(
-                    $"Are you sure you want to delete this salary record?\n\n" +
-                    $"Employee: {record.employee_name}\n" +
-                    $"Amount: {record.DisplayAmount:N0} VND\n" +
-                    $"Effective From: {record.effective_from:dd/MM/yyyy}",
-                    "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    $"Bạn có chắc chắn muốn xóa bảng lương này?\n\n" +
+                    $"Nhân viên: {record.employee_name}\n" +
+                    $"Số tiền: {record.DisplayAmount:N0} VND\n" +
+                    $"Hiệu lực từ: {record.effective_from:dd/MM/yyyy}",
+                    "Xác nhận xóa", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                 if (result == MessageBoxResult.Yes)
                 {
@@ -486,20 +486,20 @@ namespace EmployeeManagement
 
                         if (response.IsSuccessStatusCode)
                         {
-                            MessageBox.Show("Salary record deleted successfully.", "Success", 
+                            MessageBox.Show("Xóa bảng lương thành công.", "Thành công", 
                                 MessageBoxButton.OK, MessageBoxImage.Information);
                             LoadSalaryData();
                         }
                         else
                         {
                             var errorContent = await response.Content.ReadAsStringAsync();
-                            MessageBox.Show($"Delete failed: {errorContent}", "Error", 
+                            MessageBox.Show($"Xóa thất bại: {errorContent}", "Lỗi", 
                                 MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Error deleting salary: {ex.Message}", "Error", 
+                        MessageBox.Show($"Lỗi khi xóa lương: {ex.Message}", "Lỗi", 
                             MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }

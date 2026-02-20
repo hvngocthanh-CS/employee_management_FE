@@ -14,7 +14,7 @@ namespace EmployeeManagement
         public RegisterPage()
         {
             InitializeComponent();
-            _httpClient = new HttpClient { BaseAddress = new Uri("http://localhost:8000") };
+            _httpClient = new HttpClient { BaseAddress = new Uri("http://127.0.0.1:8000") };
         }
 
         private async void RegisterButton_Click(object sender, RoutedEventArgs e)
@@ -25,32 +25,32 @@ namespace EmployeeManagement
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(confirmPassword))
             {
-                MessageBox.Show("Please fill all fields.", "Validation Error");
+                MessageBox.Show("Vui lòng điền đầy đủ các trường.", "Lỗi xác thực");
                 return;
             }
 
             if (username.Length < 3)
             {
-                MessageBox.Show("Username must be at least 3 characters.", "Validation Error");
+                MessageBox.Show("Tên đăng nhập phải có ít nhất 3 ký tự.", "Lỗi xác thực");
                 return;
             }
 
             if (password.Length < 6)
             {
-                MessageBox.Show("Password must be at least 6 characters.", "Validation Error");
+                MessageBox.Show("Mật khẩu phải có ít nhất 6 ký tự.", "Lỗi xác thực");
                 return;
             }
 
             if (password != confirmPassword)
             {
-                MessageBox.Show("Passwords do not match.", "Validation Error");
+                MessageBox.Show("Mật khẩu không khớp.", "Lỗi xác thực");
                 return;
             }
 
             // Get selected role from ComboBox
             if (RoleComboBox.SelectedItem is not ComboBoxItem selectedRoleItem || selectedRoleItem.Tag is not string role)
             {
-                MessageBox.Show("Please select a role.", "Validation Error");
+                MessageBox.Show("Vui lòng chọn vai trò.", "Lỗi xác thực");
                 return;
             }
 
@@ -65,8 +65,8 @@ namespace EmployeeManagement
                     var responseContent = await response.Content.ReadAsStringAsync();
                     var result = JsonSerializer.Deserialize<JsonElement>(responseContent);
                     
-                    string message = $"Registration successful!\nUsername: {username}\nRole: {role}\n\nLogging you in automatically...";
-                    MessageBox.Show(message, "Registration Success");
+                    string message = $"Đăng ký thành công!\nTên đăng nhập: {username}\nVai trò: {role}\n\nĐang tự động đăng nhập...";
+                    MessageBox.Show(message, "Thành công");
                     
                     // Auto login after successful registration using username
                     bool loginSuccess = await Services.UserSessionService.LoginAsync(username, password);
@@ -83,7 +83,7 @@ namespace EmployeeManagement
                     }
                     else
                     {
-                        MessageBox.Show("Registration successful but auto-login failed. Please login manually.", "Info");
+                        MessageBox.Show("Đăng ký thành công nhưng tự động đăng nhập thất bại. Vui lòng đăng nhập thủ công.", "Thông báo");
                         MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
                         mainWindow.ShowLoginPage();
                     }
@@ -91,12 +91,12 @@ namespace EmployeeManagement
                 else
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
-                    MessageBox.Show($"Registration failed: {errorContent}", "Registration Error");
+                    MessageBox.Show($"Đăng ký thất bại: {errorContent}", "Lỗi");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred: {ex.Message}", "Error");
+                MessageBox.Show($"Đã xảy ra lỗi: {ex.Message}", "Lỗi");
             }
         }
 

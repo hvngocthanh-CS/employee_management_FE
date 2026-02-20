@@ -8,7 +8,7 @@ namespace EmployeeManagement
 {
     public partial class MainWindow : Window
     {
-        private readonly string _backendUrl = "http://localhost:8000";
+        private readonly string _backendUrl = "http://127.0.0.1:8000";
         
         public MainWindow()
         {

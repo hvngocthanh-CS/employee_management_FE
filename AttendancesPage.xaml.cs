@@ -16,7 +16,7 @@ namespace EmployeeManagement
 {
     public partial class AttendancesPage : Page
     {
-        private readonly string _backendUrl = "http://localhost:8000";
+        private readonly string _backendUrl = "http://127.0.0.1:8000";
         private ObservableCollection<AttendanceRecord> _attendanceRecords = new ObservableCollection<AttendanceRecord>();
         private int? _selectedEmployeeId = null;
         private string _selectedEmployeeName = null;

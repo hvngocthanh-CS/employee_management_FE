@@ -10,7 +10,7 @@ namespace EmployeeManagement
 {
     public partial class DashboardPage : Page
     {
-        private readonly string baseUrl = "http://localhost:8000/api/v1";
+        private readonly string baseUrl = "http://127.0.0.1:8000/api/v1";
 
         public DashboardPage()
         {
@@ -50,45 +50,67 @@ namespace EmployeeManagement
             {
                 using var httpClient = UserSessionService.GetAuthenticatedHttpClient();
                 
-                // Load departments count
-                var departmentsResponse = await httpClient.GetAsync($"{baseUrl}/departments");
-                if (departmentsResponse.IsSuccessStatusCode)
+                // Load all metrics from new dashboard API
+                var response = await httpClient.GetAsync($"{baseUrl}/statistics/dashboard");
+                
+                if (response.IsSuccessStatusCode)
                 {
-                    var departmentsContent = await departmentsResponse.Content.ReadAsStringAsync();
-                    var departments = JArray.Parse(departmentsContent);
-                    TotalDepartmentsText.Text = departments.Count.ToString();
+                    var content = await response.Content.ReadAsStringAsync();
+                    var metrics = JObject.Parse(content);
+                    
+                    // Employees
+                    TotalEmployeesText.Text = metrics["employees"]["total"].ToString();
+                    
+                    // Departments
+                    TotalDepartmentsText.Text = metrics["departments"]["total"].ToString();
+                    
+                    // Positions
+                    TotalPositionsText.Text = metrics["positions"]["total"].ToString();
+                    
+                    // Leaves
+                    PendingLeavesText.Text = metrics["leaves"]["pending_requests"].ToString();
+                    
+                    // Attendance Today
+                    PresentTodayText.Text = metrics["attendance_today"]["present"].ToString();
+                    LateTodayText.Text = metrics["attendance_today"]["late"].ToString();
+                    
+                    // Users
+                    ActiveUsersText.Text = metrics["users"]["total"].ToString();
+                    
+                    // Salary - Format as Vietnamese currency
+                    var avgSalary = decimal.Parse(metrics["salaries"]["average_salary"].ToString());
+                    AverageSalaryText.Text = avgSalary.ToString("N0") + " VND";
                 }
-
-                // Load employees count
-                var employeesResponse = await httpClient.GetAsync($"{baseUrl}/employees");
-                if (employeesResponse.IsSuccessStatusCode)
+                else
                 {
-                    var employeesContent = await employeesResponse.Content.ReadAsStringAsync();
-                    var employees = JArray.Parse(employeesContent);
-                    TotalEmployeesText.Text = employees.Count.ToString();
+                    // API failed, show zeros
+                    SetDefaultValues();
                 }
-
-                // Set default values for other statistics
-                // These would need proper API endpoints to get real data
-                TotalPositionsText.Text = "5";
-                PendingLeavesText.Text = "2";
-                PresentTodayText.Text = "45";
-                ActiveUsersText.Text = "12";
-                AverageSalaryText.Text = "50,000,000 VND";
-                LateTodayText.Text = "3";
             }
             catch (HttpRequestException)
             {
                 // API not available, show default values
-                TotalEmployeesText.Text = "0";
-                TotalDepartmentsText.Text = "0";
-                TotalPositionsText.Text = "0";
-                PendingLeavesText.Text = "0";
-                PresentTodayText.Text = "0";
-                ActiveUsersText.Text = "0";
-                AverageSalaryText.Text = "0 VND";
-                LateTodayText.Text = "0";
+                SetDefaultValues();
             }
+            catch (Exception ex)
+            {
+                // Parsing or other error
+                System.Windows.MessageBox.Show($"Lỗi khi tải dữ liệu dashboard: {ex.Message}", 
+                    "Lỗi", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                SetDefaultValues();
+            }
+        }
+        
+        private void SetDefaultValues()
+        {
+            TotalEmployeesText.Text = "0";
+            TotalDepartmentsText.Text = "0";
+            TotalPositionsText.Text = "0";
+            PendingLeavesText.Text = "0";
+            PresentTodayText.Text = "0";
+            ActiveUsersText.Text = "0";
+            AverageSalaryText.Text = "0 VND";
+            LateTodayText.Text = "0";
         }
     }
 }

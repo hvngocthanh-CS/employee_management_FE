@@ -3,8 +3,9 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Title="Departments">
 
-    <Grid Background="White">
+    <Grid Background="White" Margin="20">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -16,6 +17,7 @@
                    Margin="0,0,0,20"
                    Foreground="#333333"/>
 
+        <!-- Add Department Section -->
         <StackPanel Grid.Row="1"
                     Orientation="Horizontal"
                     Margin="0,0,0,15">
@@ -23,33 +25,98 @@
                      Width="200"
                      Height="30"
                      Margin="0,0,10,0"
-                     Padding="5"/>
+                     Padding="5"
+                     VerticalContentAlignment="Center"/>
 
             <Button x:Name="AddButton"
                     Content="Add"
                     Height="30"
-                    Width="60"
+                    Width="80"
                     Click="AddButton_Click"
                     Background="#4CAF50"
                     Foreground="White"
                     Cursor="Hand"/>
         </StackPanel>
 
+        <!-- Search Section -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    Margin="0,0,0,15">
+            <TextBlock Text="Search:" 
+                       VerticalAlignment="Center"
+                       Margin="0,0,10,0"
+                       FontWeight="SemiBold"/>
+            <TextBox x:Name="SearchTextBox"
+                     Width="200"
+                     Height="30"
+                     Margin="0,0,10,0"
+                     Padding="5"
+                     VerticalContentAlignment="Center"
+                     TextChanged="SearchTextBox_TextChanged"/>
+            <Button x:Name="RefreshButton"
+                    Content="Refresh"
+                    Height="30"
+                    Width="80"
+                    Click="RefreshButton_Click"
+                    Background="#2196F3"
+                    Foreground="White"
+                    Cursor="Hand"
+                    Margin="0,0,10,0"/>
+            <Button x:Name="CompareButton"
+                    Content="Compare Selected"
+                    Height="30"
+                    Width="130"
+                    Click="CompareButton_Click"
+                    Background="#FF9800"
+                    Foreground="White"
+                    Cursor="Hand"/>
+        </StackPanel>
+
         <DataGrid x:Name="DepartmentsDataGrid"
-                  Grid.Row="2"
+                  Grid.Row="3"
                   AutoGenerateColumns="False"
-                  CanUserAddRows="False">
+                  CanUserAddRows="False"
+                  SelectionMode="Extended"
+                  SelectionUnit="FullRow">
             <DataGrid.Columns>
+                <DataGridCheckBoxColumn Header="Select"
+                                        Width="50"/>
                 <DataGridTextColumn Header="ID"
                                     Binding="{Binding id}"
                                     Width="50"
                                     IsReadOnly="True"/>
                 <DataGridTextColumn Header="Department Name"
                                     Binding="{Binding name}"
-                                    Width="200"/>
-                <DataGridTextColumn Header="Description"
-                                    Binding="{Binding description}"
-                                    Width="250"/>
+                                    Width="200"
+                                    IsReadOnly="True"/>
+                <DataGridTextColumn Header="Employees"
+                                    Binding="{Binding employee_count}"
+                                    Width="100"
+                                    IsReadOnly="True"/>
+                <DataGridTemplateColumn Header="Actions" Width="200">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Statistics"
+                                        Click="ViewStatistics_Click"
+                                        Tag="{Binding id}"
+                                        Margin="5,0"
+                                        Padding="8,4"
+                                        Background="#2196F3"
+                                        Foreground="White"
+                                        Cursor="Hand"/>
+                                <Button Content="Employees"
+                                        Click="ViewEmployees_Click"
+                                        Tag="{Binding id}"
+                                        Margin="5,0"
+                                        Padding="8,4"
+                                        Background="#4CAF50"
+                                        Foreground="White"
+                                        Cursor="Hand"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

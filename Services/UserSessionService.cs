@@ -21,7 +21,7 @@ namespace EmployeeManagement.Services
         public static string? AccessToken => _accessToken;
         public static bool IsAuthenticated => _currentUser != null && !string.IsNullOrEmpty(_accessToken);
 
-        private static readonly string _backendUrl = "http://localhost:8000";
+        private static readonly string _backendUrl = "http://127.0.0.1:8000";
 
         #region User Models
         public class UserInfo
