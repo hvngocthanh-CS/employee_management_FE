@@ -4,19 +4,322 @@
       Title="Leaves Management"
       Background="#ECF0F1">
 
-    <Grid Margin="30">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="🏖️" FontSize="80" HorizontalAlignment="Center" Margin="0,0,0,20"/>
-            <TextBlock Text="Leaves Management"
-                      FontSize="32"
-                      FontWeight="Bold"
-                      Foreground="#2C3E50"
-                      HorizontalAlignment="Center"
-                      Margin="0,0,0,10"/>
-            <TextBlock Text="This feature is coming soon!"
-                      FontSize="16"
-                      Foreground="#7F8C8D"
-                      HorizontalAlignment="Center"/>
-        </StackPanel>
-    </Grid>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Grid Grid.Row="0" Margin="0,0,0,20">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="🏖️" FontSize="32" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBlock Text="Leave Management"
+                              FontSize="28"
+                              FontWeight="Bold"
+                              Foreground="#2C3E50"
+                              VerticalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Leave Request Form (All roles can create leaves) -->
+            <Border Grid.Row="1" 
+                    x:Name="LeaveRequestPanel"
+                    Background="White" 
+                    BorderBrush="#BDC3C7" 
+                    BorderThickness="1" 
+                    CornerRadius="5" 
+                    Padding="20" 
+                    Margin="0,0,0,20"
+                    Visibility="Collapsed">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Grid.Row="0"
+                              Text="New Leave Request" 
+                              FontSize="18" 
+                              FontWeight="Bold" 
+                              Foreground="#2C3E50" 
+                              Margin="0,0,0,15"/>
+                    
+                    <!-- Employee Search (Manager/Admin only) -->
+                    <Grid Grid.Row="1" x:Name="EmployeeSearchPanel" Margin="0,0,0,15" Visibility="Collapsed">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0" Text="Employee:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBox Grid.Row="0" 
+                                    x:Name="EmployeeSearchTextBox" 
+                                    TextChanged="EmployeeSearch_TextChanged"
+                                    Margin="0,0,0,5"
+                                    Height="30"/>
+                            <TextBlock Grid.Row="0" 
+                                      Text="Type at least 2 characters to search..." 
+                                      IsHitTestVisible="False" 
+                                      VerticalAlignment="Center" 
+                                      Margin="5,0,0,5"
+                                      Foreground="Gray">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Text, ElementName=EmployeeSearchTextBox}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            
+                            <ListBox Grid.Row="1" 
+                                    x:Name="EmployeeSearchResults" 
+                                    Visibility="Collapsed"
+                                    MaxHeight="200"
+                                    SelectionChanged="EmployeeSearchResults_SelectionChanged">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding employee_code}" FontWeight="Bold" Margin="0,0,10,0"/>
+                                            <TextBlock Text="-" Margin="0,0,5,0"/>
+                                            <TextBlock Text="{Binding full_name}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </Grid>
+                    
+                    <Grid Grid.Row="2" Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0" Text="Leave Type:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <ComboBox Grid.Column="1" x:Name="LeaveTypeComboBox" Margin="0,0,20,0">
+                            <ComboBoxItem Content="Annual Leave" Tag="annual"/>
+                            <ComboBoxItem Content="Sick Leave" Tag="sick"/>
+                            <ComboBoxItem Content="Unpaid Leave" Tag="unpaid"/>
+                            <ComboBoxItem Content="Emergency Leave" Tag="emergency"/>
+                            <ComboBoxItem Content="Maternity Leave" Tag="maternity"/>
+                            <ComboBoxItem Content="Paternity Leave" Tag="paternity"/>
+                            <ComboBoxItem Content="Other" Tag="other"/>
+                        </ComboBox>
+                        
+                        <TextBlock Grid.Column="2" Text="Start Date:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <DatePicker Grid.Column="3" x:Name="StartDatePicker" Margin="0,0,20,0"/>
+                        
+                        <TextBlock Grid.Column="4" Text="End Date:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <DatePicker Grid.Column="5" x:Name="EndDatePicker"/>
+                    </Grid>
+                    
+                    <Grid Grid.Row="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0" Text="Reason:" VerticalAlignment="Top" Margin="0,5,10,0"/>
+                        <TextBox Grid.Column="1" 
+                                x:Name="ReasonTextBox" 
+                                TextWrapping="Wrap" 
+                                AcceptsReturn="True"
+                                Height="60" 
+                                Margin="0,0,20,0"/>
+                        
+                        <StackPanel Grid.Column="2" Orientation="Vertical">
+                            <Button x:Name="SubmitLeaveButton"
+                                   Click="SubmitLeaveButton_Click"
+                                   Content="Submit Request"
+                                   Background="#27AE60"
+                                   Foreground="White"
+                                   Padding="15,8"
+                                   BorderThickness="0"
+                                   FontWeight="Bold"
+                                   Cursor="Hand"
+                                   Margin="0,0,0,5"/>
+                            
+                            <Button x:Name="ClearLeaveButton"
+                                   Click="ClearLeaveButton_Click"
+                                   Content="Clear Form"
+                                   Background="#95A5A6"
+                                   Foreground="White"
+                                   Padding="15,8"
+                                   BorderThickness="0"
+                                   Cursor="Hand"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- Leave Records -->
+            <Border Grid.Row="2" 
+                    Background="White" 
+                    BorderBrush="#BDC3C7" 
+                    BorderThickness="1" 
+                    CornerRadius="5">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Title and Filter Controls -->
+                    <Grid Grid.Row="0" Margin="15,15,15,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0"
+                                  Text="Leave History"
+                                  FontSize="18"
+                                  FontWeight="Bold"
+                                  Foreground="#2C3E50"
+                                  VerticalAlignment="Center"/>
+
+                        <StackPanel Grid.Column="1" 
+                                   Orientation="Horizontal" 
+                                   VerticalAlignment="Center">
+                            <TextBlock Text="Status:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <ComboBox x:Name="StatusFilterComboBox" 
+                                     SelectionChanged="StatusFilter_Changed"
+                                     Width="120" 
+                                     Margin="0,0,10,0">
+                                <ComboBoxItem Content="All" Tag=""/>
+                                <ComboBoxItem Content="Pending" Tag="pending"/>
+                                <ComboBoxItem Content="Approved" Tag="approved"/>
+                                <ComboBoxItem Content="Rejected" Tag="rejected"/>
+                                <ComboBoxItem Content="Cancelled" Tag="cancelled"/>
+                            </ComboBox>
+                            
+                            <Button x:Name="RefreshLeavesButton"
+                                   Click="RefreshLeavesButton_Click"
+                                   Content="🔄 Refresh"
+                                   Background="#3498DB"
+                                   Foreground="White"
+                                   Padding="10,5"
+                                   BorderThickness="0"
+                                   Cursor="Hand"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Loading Indicator -->
+                    <TextBlock x:Name="LoadingLeavesLabel"
+                              Grid.Row="1"
+                              Text="Loading leave records..."
+                              HorizontalAlignment="Center"
+                              Margin="15"
+                              Foreground="#7F8C8D"
+                              FontStyle="Italic"
+                              Visibility="Collapsed"/>
+
+                    <!-- Data Grid -->
+                    <DataGrid x:Name="LeaveDataGrid"
+                             Grid.Row="2"
+                             AutoGenerateColumns="False"
+                             CanUserAddRows="False"
+                             CanUserDeleteRows="False"
+                             IsReadOnly="True"
+                             GridLinesVisibility="Horizontal"
+                             HeadersVisibility="Column"
+                             AlternatingRowBackground="#F8F9FA"
+                             Margin="15,0,15,15">
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Type" 
+                                               Binding="{Binding leave_type}"
+                                               Width="120"/>
+                            <DataGridTextColumn Header="Start Date" 
+                                               Binding="{Binding start_date, StringFormat='{}{0:dd/MM/yyyy}'}"
+                                               Width="100"/>
+                            <DataGridTextColumn Header="End Date" 
+                                               Binding="{Binding end_date, StringFormat='{}{0:dd/MM/yyyy}'}"
+                                               Width="100"/>
+                            <DataGridTextColumn Header="Days" 
+                                               Binding="{Binding total_days}"
+                                               Width="60"/>
+                            <DataGridTextColumn Header="Status" 
+                                               Binding="{Binding status}"
+                                               Width="80"/>
+                            <DataGridTextColumn Header="Reason" 
+                                               Binding="{Binding reason}"
+                                               Width="150"/>
+                            <DataGridTextColumn Header="Employee" 
+                                               Binding="{Binding employee_name}"
+                                               Width="120"
+                                               x:Name="LeaveEmployeeColumn"/>
+                            
+                            <!-- Actions Column (Manager/Admin only) -->
+                            <DataGridTemplateColumn Header="Actions" Width="200">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <Button Content="✅ Approve"
+                                                   Click="ApproveLeaveButton_Click"
+                                                   Tag="{Binding}"
+                                                   Background="#27AE60"
+                                                   Foreground="White"
+                                                   Padding="5,2"
+                                                   Margin="2"
+                                                   BorderThickness="0"
+                                                   FontSize="11"
+                                                   Visibility="Collapsed"
+                                                   x:Name="ApproveButton"
+                                                   Cursor="Hand"/>
+                                            <Button Content="❌ Reject"
+                                                   Click="RejectLeaveButton_Click"
+                                                   Tag="{Binding}"
+                                                   Background="#E74C3C"
+                                                   Foreground="White"
+                                                   Padding="5,2"
+                                                   Margin="2"
+                                                   BorderThickness="0"
+                                                   FontSize="11"
+                                                   Visibility="Collapsed"
+                                                   x:Name="RejectButton"
+                                                   Cursor="Hand"/>
+                                            <Button Content="🗑️ Delete"
+                                                   Click="DeleteLeaveButton_Click"
+                                                   Tag="{Binding}"
+                                                   Background="#95A5A6"
+                                                   Foreground="White"
+                                                   Padding="5,2"
+                                                   Margin="2"
+                                                   BorderThickness="0"
+                                                   FontSize="11"
+                                                   Visibility="Collapsed"
+                                                   x:Name="DeleteButton"
+                                                   Cursor="Hand"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
 </Page>

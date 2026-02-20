@@ -1,22 +1,320 @@
 <Page x:Class="EmployeeManagement.AttendancesPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Title="Attendances Management"
+      Title="Attendance Management"
       Background="#ECF0F1">
 
-    <Grid Margin="30">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="⏰" FontSize="80" HorizontalAlignment="Center" Margin="0,0,0,20"/>
-            <TextBlock Text="Attendances Management"
-                      FontSize="32"
-                      FontWeight="Bold"
-                      Foreground="#2C3E50"
-                      HorizontalAlignment="Center"
-                      Margin="0,0,0,10"/>
-            <TextBlock Text="This feature is coming soon!"
-                      FontSize="16"
-                      Foreground="#7F8C8D"
-                      HorizontalAlignment="Center"/>
-        </StackPanel>
-    </Grid>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Grid Grid.Row="0" Margin="0,0,0,20">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="⏰" FontSize="32" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBlock Text="Attendance Management"
+                              FontSize="28"
+                              FontWeight="Bold"
+                              Foreground="#2C3E50"
+                              VerticalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Check-in/Check-out Panel (Employee only) -->
+            <Border Grid.Row="1" 
+                    x:Name="CheckInOutPanel"
+                    Background="White" 
+                    BorderBrush="#BDC3C7" 
+                    BorderThickness="1" 
+                    CornerRadius="5" 
+                    Padding="15" 
+                    Margin="0,0,0,20"
+                    Visibility="Collapsed">
+                <StackPanel>
+                    <TextBlock Text="Quick Actions" 
+                              FontSize="16" 
+                              FontWeight="Bold" 
+                              Foreground="#2C3E50" 
+                              Margin="0,0,0,10"/>
+                    
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button x:Name="CheckInButton"
+                               Click="CheckInButton_Click"
+                               Content="Check In"
+                               Background="#27AE60"
+                               Foreground="White"
+                               Padding="20,10"
+                               Margin="10"
+                               BorderThickness="0"
+                               FontSize="14"
+                               FontWeight="Bold"
+                               Cursor="Hand"/>
+                        
+                        <Button x:Name="CheckOutButton"
+                               Click="CheckOutButton_Click"
+                               Content="Check Out"
+                               Background="#E74C3C"
+                               Foreground="White"
+                               Padding="20,10"
+                               Margin="10"
+                               BorderThickness="0"
+                               FontSize="14"
+                               FontWeight="Bold"
+                               Cursor="Hand"/>
+                    </StackPanel>
+                    
+                    <TextBlock x:Name="LastActionLabel"
+                              Text="No recent attendance record"
+                              HorizontalAlignment="Center"
+                              Foreground="#7F8C8D"
+                              FontStyle="Italic"
+                              Margin="0,10,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Employee Search Panel (Admin/Manager only) -->
+            <Border Grid.Row="2"
+                    x:Name="EmployeeSearchPanel"
+                    Background="White"
+                    BorderBrush="#BDC3C7"
+                    BorderThickness="1"
+                    CornerRadius="5"
+                    Padding="15"
+                    Margin="0,0,0,20"
+                    Visibility="Collapsed">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0"
+                              Text="Search Employee:"
+                              FontWeight="Bold"
+                              VerticalAlignment="Center"
+                              Margin="0,0,10,0"/>
+
+                    <Grid Grid.Column="1">
+                        <TextBox x:Name="EmployeeSearchTextBox"
+                                TextChanged="EmployeeSearch_TextChanged"
+                                VerticalAlignment="Center"
+                                Padding="5"
+                                FontSize="14"/>
+                        <TextBlock x:Name="SearchPlaceholderText"
+                                  Text="Type at least 2 characters to search..."
+                                  Foreground="#95A5A6"
+                                  FontStyle="Italic"
+                                  VerticalAlignment="Center"
+                                  Margin="8,0,0,0"
+                                  IsHitTestVisible="False"
+                                  Visibility="Visible"/>
+                    </Grid>
+
+                    <Button Grid.Column="2"
+                           x:Name="AddAttendanceButton"
+                           Click="AddAttendanceButton_Click"
+                           Content="+ Add Attendance"
+                           Background="#27AE60"
+                           Foreground="White"
+                           Padding="15,8"
+                           Margin="10,0,0,0"
+                           BorderThickness="0"
+                           FontWeight="Bold"
+                           Cursor="Hand"/>
+                </Grid>
+            </Border>
+
+            <!-- Attendance Records -->
+            <Border Grid.Row="3" 
+                    Background="White" 
+                    BorderBrush="#BDC3C7" 
+                    BorderThickness="1" 
+                    CornerRadius="5">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Title and Filters -->
+                    <Grid Grid.Row="0" Margin="15,15,15,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0"
+                                  Text="Attendance Records"
+                                  FontSize="18"
+                                  FontWeight="Bold"
+                                  Foreground="#2C3E50"
+                                  VerticalAlignment="Center"/>
+
+                        <StackPanel Grid.Column="2" 
+                                   Orientation="Horizontal" 
+                                   VerticalAlignment="Center">
+                            <TextBlock Text="From:" 
+                                      VerticalAlignment="Center" 
+                                      Margin="0,0,5,0"/>
+                            <DatePicker x:Name="StartDatePicker" 
+                                       SelectedDateChanged="DateFilter_Changed"
+                                       Width="120" 
+                                       Margin="0,0,10,0"/>
+                            
+                            <TextBlock Text="To:" 
+                                      VerticalAlignment="Center" 
+                                      Margin="0,0,5,0"/>
+                            <DatePicker x:Name="EndDatePicker" 
+                                       SelectedDateChanged="DateFilter_Changed"
+                                       Width="120" 
+                                       Margin="0,0,10,0"/>
+                            
+                            <Button x:Name="RefreshButton"
+                                   Click="RefreshButton_Click"
+                                   Content="🔄 Refresh"
+                                   Background="#3498DB"
+                                   Foreground="White"
+                                   Padding="10,5"
+                                   BorderThickness="0"
+                                   FontWeight="Bold"
+                                   Cursor="Hand"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Employee filter (Admin/Manager) -->
+                    <StackPanel Grid.Row="1" 
+                               x:Name="EmployeeFilterPanel"
+                               Orientation="Horizontal" 
+                               Margin="15,0,15,10"
+                               Visibility="Collapsed">
+                        <TextBlock Text="Selected Employee:" 
+                                  FontWeight="Bold"
+                                  VerticalAlignment="Center" 
+                                  Margin="0,0,10,0"/>
+                        <TextBlock x:Name="SelectedEmployeeLabel"
+                                  Text="All Employees"
+                                  VerticalAlignment="Center"
+                                  Foreground="#3498DB"/>
+                        <Button x:Name="ClearFilterButton"
+                               Content="Clear"
+                               Click="ClearFilter_Click"
+                               Background="#95A5A6"
+                               Foreground="White"
+                               Padding="8,4"
+                               Margin="10,0,0,0"
+                               BorderThickness="0"
+                               FontSize="11"
+                               Cursor="Hand"
+                               Visibility="Collapsed"/>
+                    </StackPanel>
+
+                    <!-- Data Grid -->
+                    <DataGrid Grid.Row="2"
+                             x:Name="AttendanceDataGrid"
+                             AutoGenerateColumns="False"
+                             IsReadOnly="True"
+                             SelectionMode="Single"
+                             GridLinesVisibility="Horizontal"
+                             HeadersVisibility="Column"
+                             RowBackground="White"
+                             AlternatingRowBackground="#F8F9FA"
+                             BorderThickness="0"
+                             Margin="15">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Date" 
+                                               Binding="{Binding attendance_date, StringFormat=dd/MM/yyyy}" 
+                                               Width="100"/>
+                            
+                            <DataGridTextColumn Header="Employee Code" 
+                                               Binding="{Binding employee_code}" 
+                                               Width="120"
+                                               x:Name="EmployeeCodeColumn"/>
+                            
+                            <DataGridTextColumn Header="Employee Name" 
+                                               Binding="{Binding employee_name}" 
+                                               Width="*"
+                                               MinWidth="150"
+                                               x:Name="EmployeeNameColumn"/>
+                            
+                            <DataGridTextColumn Header="Department" 
+                                               Binding="{Binding department_name}" 
+                                               Width="120"
+                                               x:Name="DepartmentColumn"/>
+                            
+                            <DataGridTextColumn Header="Check In" 
+                                               Binding="{Binding CheckInDisplay}" 
+                                               Width="80"/>
+                            
+                            <DataGridTextColumn Header="Check Out" 
+                                               Binding="{Binding CheckOutDisplay}" 
+                                               Width="80"/>
+                            
+                            <DataGridTextColumn Header="Hours" 
+                                               Binding="{Binding working_hours, StringFormat=N1}" 
+                                               Width="60"/>
+                            
+                            <DataGridTextColumn Header="Status" 
+                                               Binding="{Binding status}" 
+                                               Width="80"/>
+                            
+                            <!-- Actions Column -->
+                            <DataGridTemplateColumn Header="Actions" Width="Auto">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <!-- Edit Button (Admin/Manager) -->
+                                            <Button Content="Edit"
+                                                   Tag="{Binding}"
+                                                   Click="EditAttendanceButton_Click"
+                                                   x:Name="EditButton"
+                                                   Background="#3498DB"
+                                                   Foreground="White"
+                                                   Padding="8,4"
+                                                   Margin="2"
+                                                   BorderThickness="0"
+                                                   FontSize="11"
+                                                   Cursor="Hand"
+                                                   Visibility="Collapsed"/>
+                                            
+                                            <!-- Delete Button (Admin only) -->
+                                            <Button Content="Delete"
+                                                   Tag="{Binding}"
+                                                   Click="DeleteAttendanceButton_Click"
+                                                   x:Name="DeleteButton"
+                                                   Background="#E74C3C"
+                                                   Foreground="White"
+                                                   Padding="8,4"
+                                                   Margin="2"
+                                                   BorderThickness="0"
+                                                   FontSize="11"
+                                                   Cursor="Hand"
+                                                   Visibility="Collapsed"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Loading Label -->
+                    <TextBlock x:Name="LoadingLabel"
+                              Grid.Row="2"
+                              Text="Loading..."
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              FontSize="16"
+                              Foreground="#7F8C8D"
+                              Visibility="Collapsed"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
 </Page>

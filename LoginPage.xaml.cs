@@ -11,19 +11,19 @@ namespace EmployeeManagement
         {
             InitializeComponent();
             
-            // Set focus on username field
-            Loaded += (s, e) => UsernameTextBox.Focus();
+            // Set focus on email field
+            Loaded += (s, e) => EmailTextBox.Focus();
         }
 
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            var username = UsernameTextBox.Text.Trim();
+            var identifier = EmailTextBox.Text.Trim();
             var password = PasswordBox.Password;
 
             // Validation
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(identifier) || string.IsNullOrEmpty(password))
             {
-                MessageBox.Show("Please enter both username and password.", "Validation Error");
+                MessageBox.Show("Please enter both email/username and password.", "Validation Error");
                 return;
             }
 
@@ -35,7 +35,7 @@ namespace EmployeeManagement
             try
             {
                 // Use UserSessionService for authentication
-                bool loginSuccess = await UserSessionService.LoginAsync(username, password);
+                bool loginSuccess = await UserSessionService.LoginAsync(identifier, password);
 
                 if (loginSuccess)
                 {
@@ -65,15 +65,14 @@ namespace EmployeeManagement
                 LoadingIndicator.Visibility = Visibility.Hidden;
             }
         }
-
         private void RegisterLink_Click(object sender, RoutedEventArgs e)
         {
-            // Navigate to register page
+            // Navigate to register page - for admin/manager only
             var mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow?.ShowRegisterPage();
         }
 
-        private void UsernameTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void EmailTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == System.Windows.Input.Key.Enter)
             {
@@ -93,28 +92,28 @@ namespace EmployeeManagement
         {
             // Clear password field for security
             PasswordBox.Clear();
-            UsernameTextBox.Focus();
+            EmailTextBox.Focus();
         }
 
         #region Demo Login Buttons (for testing different roles)
         private async void AdminDemoButton_Click(object sender, RoutedEventArgs e)
         {
-            await DemoLogin("admin", "admin123");
+            await DemoLogin("admin@company.com", "admin123");
         }
 
         private async void ManagerDemoButton_Click(object sender, RoutedEventArgs e)
         {
-            await DemoLogin("manager", "manager123");
+            await DemoLogin("manager@company.com", "manager123");
         }
 
         private async void EmployeeDemoButton_Click(object sender, RoutedEventArgs e)
         {
-            await DemoLogin("employee", "employee123");
+            await DemoLogin("employee@company.com", "employee123");
         }
 
-        private async System.Threading.Tasks.Task DemoLogin(string username, string password)
+        private async System.Threading.Tasks.Task DemoLogin(string identifier, string password)
         {
-            UsernameTextBox.Text = username;
+            EmailTextBox.Text = identifier;
             PasswordBox.Password = password;
             
             // Auto-trigger login

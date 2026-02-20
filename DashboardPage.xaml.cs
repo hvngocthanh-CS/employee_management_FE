@@ -74,7 +74,7 @@ namespace EmployeeManagement
                 PendingLeavesText.Text = "2";
                 PresentTodayText.Text = "45";
                 ActiveUsersText.Text = "12";
-                AverageSalaryText.Text = "$5,500";
+                AverageSalaryText.Text = "50,000,000 VND";
                 LateTodayText.Text = "3";
             }
             catch (HttpRequestException)
@@ -86,7 +86,7 @@ namespace EmployeeManagement
                 PendingLeavesText.Text = "0";
                 PresentTodayText.Text = "0";
                 ActiveUsersText.Text = "0";
-                AverageSalaryText.Text = "$0";
+                AverageSalaryText.Text = "0 VND";
                 LateTodayText.Text = "0";
             }
         }

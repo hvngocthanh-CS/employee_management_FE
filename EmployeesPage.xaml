@@ -24,6 +24,19 @@
             </Style.Triggers>
         </Style>
         
+        <Style x:Key="InputPasswordBox" TargetType="PasswordBox">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="#4CAF50"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
         <Style x:Key="ActionButton" TargetType="Button">
             <Setter Property="Height" Value="32"/>
             <Setter Property="Padding" Value="15,0"/>
@@ -79,6 +92,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -110,27 +124,35 @@
 
                     <!-- Second Row -->
                     <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,15,0">
+                        <TextBlock Text="Password *" Style="{StaticResource InputLabel}"/>
+                        <PasswordBox x:Name="PasswordBox" 
+                                    Style="{StaticResource InputPasswordBox}" 
+                                    ToolTip="Initial password for employee account (min 6 chars)"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,15,0">
                         <TextBlock Text="Department" Style="{StaticResource InputLabel}"/>
                         <ComboBox x:Name="DepartmentComboBox" Height="32" ToolTip="Select employee's department"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,15,0">
+                    <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,15,0">
                         <TextBlock Text="Position" Style="{StaticResource InputLabel}"/>
                         <ComboBox x:Name="PositionComboBox" Height="32" ToolTip="Select employee's position"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,15,0">
+                    <StackPanel Grid.Row="1" Grid.Column="3">
                         <TextBlock Text="Hire Date" Style="{StaticResource InputLabel}"/>
                         <DatePicker x:Name="HireDatePicker" Height="32" ToolTip="Select employee's hire date"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Row="1" Grid.Column="3">
+                    <!-- Third Row -->
+                    <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,15,0">
                         <TextBlock Text="Salary" Style="{StaticResource InputLabel}"/>
                         <TextBox x:Name="SalaryTextBox" Style="{StaticResource InputTextBox}" ToolTip="Enter employee's salary"/>
                     </StackPanel>
 
                     <!-- Action Buttons -->
-                    <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" 
+                    <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" 
                                Orientation="Horizontal" 
                                HorizontalAlignment="Right" 
                                Margin="0,10,0,0">
@@ -196,8 +218,8 @@
                     <DataGridTextColumn Header="Phone" Binding="{Binding phone}" Width="120"/>
                     <DataGridTextColumn Header="Department" Binding="{Binding department_name}" Width="150" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Position" Binding="{Binding position_name}" Width="150" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Hire Date" Binding="{Binding hire_date, StringFormat={}{0:MM/dd/yyyy}}" Width="100" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Salary" Binding="{Binding salary, StringFormat=C}" Width="100" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Hire Date" Binding="{Binding hire_date, StringFormat={}{0:dd/MM/yyyy}}" Width="100" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Salary (VND)" Binding="{Binding salary, StringFormat='{}{0:N0}'}" Width="120" IsReadOnly="True"/>
                     <DataGridTemplateColumn Header="Actions" Width="150">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

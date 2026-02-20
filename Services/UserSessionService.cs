@@ -55,7 +55,7 @@ namespace EmployeeManagement.Services
 
         public class LoginRequest
         {
-            public string username { get; set; } = "";
+            public string identifier { get; set; } = "";
             public string password { get; set; } = "";
         }
 
@@ -68,11 +68,11 @@ namespace EmployeeManagement.Services
         #endregion
 
         #region Authentication Methods
-        public static async Task<bool> LoginAsync(string username, string password)
+        public static async Task<bool> LoginAsync(string identifier, string password)
         {
             try
             {
-                var loginRequest = new LoginRequest { username = username, password = password };
+                var loginRequest = new LoginRequest { identifier = identifier, password = password };
                 var json = JsonSerializer.Serialize(loginRequest);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 

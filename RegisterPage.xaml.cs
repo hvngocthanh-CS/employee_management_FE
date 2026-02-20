@@ -68,14 +68,14 @@ namespace EmployeeManagement
                     string message = $"Registration successful!\nUsername: {username}\nRole: {role}\n\nLogging you in automatically...";
                     MessageBox.Show(message, "Registration Success");
                     
-                    // Auto login after successful registration
+                    // Auto login after successful registration using username
                     bool loginSuccess = await Services.UserSessionService.LoginAsync(username, password);
                     if (loginSuccess)
                     {
                         UsernameTextBox.Clear();
                         this.PasswordBox.Clear();
                         this.ConfirmPasswordBox.Clear();
-                        RoleComboBox.SelectedIndex = 2; // Reset to Employee
+                        RoleComboBox.SelectedIndex = 0; // Reset to Admin
                         
                         // Call OnLoginSuccess to setup navigation, user info, and show dashboard
                         MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;

@@ -4,7 +4,8 @@
              Background="White">
     <Grid>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="450">
-            <TextBlock Text="Create Account" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,40" Foreground="#333333"/>
+            <TextBlock Text="👤 Create Admin/Manager Account" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10" Foreground="#333333"/>
+            <TextBlock Text="For employee accounts, contact your administrator" FontSize="12" HorizontalAlignment="Center" Margin="0,0,0,30" Foreground="#999999" FontStyle="Italic"/>
             
             <TextBlock Text="Username" FontSize="14" Margin="0,0,0,8" Foreground="#666666" FontWeight="SemiBold"/>
             <TextBox x:Name="UsernameTextBox" Height="40" FontSize="14" Padding="12,10" Background="#FFFFFF" BorderBrush="#CCCCCC" BorderThickness="1" Margin="0,0,0,20"/>
@@ -16,10 +17,9 @@
             <PasswordBox x:Name="ConfirmPasswordBox" Height="40" FontSize="14" Padding="12,10" Background="#FFFFFF" BorderBrush="#CCCCCC" BorderThickness="1" Margin="0,0,0,20"/>
             
             <TextBlock Text="Role" FontSize="14" Margin="0,0,0,8" Foreground="#666666" FontWeight="SemiBold"/>
-            <ComboBox x:Name="RoleComboBox" Height="40" FontSize="14" Padding="12,10" Background="#FFFFFF" BorderBrush="#CCCCCC" BorderThickness="1" Margin="0,0,0,30" SelectedIndex="2">
+            <ComboBox x:Name="RoleComboBox" Height="40" FontSize="14" Padding="12,10" Background="#FFFFFF" BorderBrush="#CCCCCC" BorderThickness="1" Margin="0,0,0,30" SelectedIndex="0">
                 <ComboBoxItem Content="Administrator" Tag="admin"/>
                 <ComboBoxItem Content="Manager" Tag="manager"/>
-                <ComboBoxItem Content="Employee" Tag="employee"/>
             </ComboBox>
             
             <Button Content="Register" Height="45" FontSize="16" Margin="0,0,0,10" Background="#4CAF50" Foreground="White" Click="RegisterButton_Click" Cursor="Hand" FontWeight="Bold"/>

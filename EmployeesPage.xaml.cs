@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using EmployeeManagement.Services;
@@ -23,9 +24,16 @@ namespace EmployeeManagement
         {
             InitializeComponent();
             CheckPermissionsAndSetupUI();
-            LoadDepartments();
-            LoadPositions();
-            LoadEmployees();
+            InitializeDataAsync();
+        }
+
+        private async void InitializeDataAsync()
+        {
+            // Load departments and positions first (for ComboBoxes)
+            await LoadDepartmentsAsync();
+            await LoadPositionsAsync();
+            // Then load employees (will use the loaded departments/positions)
+            await LoadEmployeesAsync();
         }
 
         private void CheckPermissionsAndSetupUI()
@@ -56,8 +64,13 @@ namespace EmployeeManagement
             public int? position_id { get; set; }
             public DateTime? hire_date { get; set; }
             public decimal? salary { get; set; }
+            
+            // Backend returns these fields directly
             public string department_name { get; set; } = "";
-            public string position_name { get; set; } = "";
+            public string position_title { get; set; } = "";
+            
+            // Alias for DataGrid column binding (if XAML uses position_name)
+            public string position_name => position_title ?? "";
         }
 
         public class Department
@@ -76,7 +89,7 @@ namespace EmployeeManagement
         #endregion
 
         #region Load Data Methods
-        private async void LoadDepartments()
+        private async Task LoadDepartmentsAsync()
         {
             try
             {
@@ -94,10 +107,6 @@ namespace EmployeeManagement
                     DepartmentComboBox.DisplayMemberPath = "name";
                     DepartmentComboBox.SelectedValuePath = "id";
                 }
-                else
-                {
-                    MessageBox.Show($"Error loading departments: {response.StatusCode}");
-                }
             }
             catch (Exception ex)
             {
@@ -105,7 +114,7 @@ namespace EmployeeManagement
             }
         }
 
-        private async void LoadPositions()
+        private async Task LoadPositionsAsync()
         {
             try
             {
@@ -123,10 +132,6 @@ namespace EmployeeManagement
                     PositionComboBox.DisplayMemberPath = "title";
                     PositionComboBox.SelectedValuePath = "id";
                 }
-                else
-                {
-                    MessageBox.Show($"Error loading positions: {response.StatusCode}");
-                }
             }
             catch (Exception ex)
             {
@@ -134,7 +139,7 @@ namespace EmployeeManagement
             }
         }
 
-        private async void LoadEmployees()
+        private async Task LoadEmployeesAsync()
         {
             try
             {
@@ -171,13 +176,8 @@ namespace EmployeeManagement
                     _employees.Clear();
                     foreach (var employee in employees)
                     {
-                        // Set department and position names for display
-                        var dept = _departments.FirstOrDefault(d => d.id == employee.department_id);
-                        var pos = _positions.FirstOrDefault(p => p.id == employee.position_id);
-                        
-                        employee.department_name = dept?.name ?? "N/A";
-                        employee.position_name = pos?.title ?? "N/A";
-                        
+                        // Backend now returns department_name and position_title directly
+                        // No need to manually map from _departments and _positions
                         _employees.Add(employee);
                     }
 
@@ -197,11 +197,28 @@ namespace EmployeeManagement
             var firstName = FirstNameTextBox.Text.Trim();
             var lastName = LastNameTextBox.Text.Trim();
             var email = EmailTextBox.Text.Trim();
+            var password = PasswordBox.Password;
             var phone = PhoneTextBox.Text.Trim();
 
             if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName) || string.IsNullOrEmpty(email))
             {
                 MessageBox.Show("Please fill all required fields (marked with *).", "Validation Error");
+                return;
+            }
+
+            // Check if we're in edit mode
+            bool isEditMode = AddButton.Tag is int;
+
+            // Validate password for new employee
+            if (!isEditMode && string.IsNullOrEmpty(password))
+            {
+                MessageBox.Show("Please enter a password for the new employee.", "Validation Error");
+                return;
+            }
+
+            if (!isEditMode && password.Length < 6)
+            {
+                MessageBox.Show("Password must be at least 6 characters.", "Validation Error");
                 return;
             }
 
@@ -211,28 +228,64 @@ namespace EmployeeManagement
                 MessageBox.Show("Please enter a valid email address.", "Validation Error");
                 return;
             }
+            
+            // Validate phone format (if provided)
+            if (!string.IsNullOrEmpty(phone))
+            {
+                if (!System.Text.RegularExpressions.Regex.IsMatch(phone, @"^[0-9+\-\s()]{8,20}$"))
+                {
+                    MessageBox.Show("Số điện thoại không hợp lệ (8-20 ký tự, chỉ số, +, -, khoảng trắng, dấu ngoặc).", "Validation Error");
+                    return;
+                }
+            }
+            
+            // Validate hire date (must not be in the future)
+            if (HireDatePicker.SelectedDate.HasValue && HireDatePicker.SelectedDate.Value > DateTime.Today)
+            {
+                MessageBox.Show("Ngày thuê không được trong tương lai.", "Validation Error");
+                return;
+            }
 
             // Prepare employee data
-            var employeeData = new
+            object employeeData;
+            
+            if (isEditMode)
             {
-                first_name = firstName,
-                last_name = lastName,
-                email = email,
-                phone = string.IsNullOrEmpty(phone) ? null : phone,
-                department_id = DepartmentComboBox.SelectedValue as int?,
-                position_id = PositionComboBox.SelectedValue as int?,
-                hire_date = HireDatePicker.SelectedDate?.ToString("yyyy-MM-dd"),
-                salary = decimal.TryParse(SalaryTextBox.Text, out var salary) ? salary : (decimal?)null
-            };
+                // For update: don't include password
+                employeeData = new
+                {
+                    first_name = firstName,
+                    last_name = lastName,
+                    email = email,
+                    phone = string.IsNullOrEmpty(phone) ? null : phone,
+                    department_id = DepartmentComboBox.SelectedValue as int?,
+                    position_id = PositionComboBox.SelectedValue as int?,
+                    hire_date = HireDatePicker.SelectedDate?.ToString("yyyy-MM-dd"),
+                    salary = decimal.TryParse(SalaryTextBox.Text, out var salaryEdit) ? salaryEdit : (decimal?)null
+                };
+            }
+            else
+            {
+                // For create: include password
+                employeeData = new
+                {
+                    first_name = firstName,
+                    last_name = lastName,
+                    email = email,
+                    password = password,
+                    phone = string.IsNullOrEmpty(phone) ? null : phone,
+                    department_id = DepartmentComboBox.SelectedValue as int?,
+                    position_id = PositionComboBox.SelectedValue as int?,
+                    hire_date = HireDatePicker.SelectedDate?.ToString("yyyy-MM-dd"),
+                    salary = decimal.TryParse(SalaryTextBox.Text, out var salaryCreate) ? salaryCreate : (decimal?)null
+                };
+            }
 
             var content = new StringContent(JsonSerializer.Serialize(employeeData), Encoding.UTF8, "application/json");
 
             try
             {
                 using var httpClient = UserSessionService.GetAuthenticatedHttpClient();
-                
-                // Check if we're in edit mode (AddButton.Tag contains employee ID)
-                bool isEditMode = AddButton.Tag is int;
                 
                 HttpResponseMessage response;
                 if (isEditMode)
@@ -252,7 +305,7 @@ namespace EmployeeManagement
                     string successMessage = isEditMode ? "Employee updated successfully!" : "Employee added successfully!";
                     MessageBox.Show(successMessage, "Success");
                     ClearForm();
-                    LoadEmployees();
+                    await LoadEmployeesAsync();
                 }
                 else
                 {
@@ -272,9 +325,9 @@ namespace EmployeeManagement
             ClearForm();
         }
 
-        private void RefreshButton_Click(object sender, RoutedEventArgs e)
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            LoadEmployees();
+            await LoadEmployeesAsync();
         }
 
         private async void DeleteButton_Click(object sender, RoutedEventArgs e)
@@ -301,7 +354,7 @@ namespace EmployeeManagement
                         if (response.IsSuccessStatusCode)
                         {
                             MessageBox.Show("Employee deleted successfully!", "Success");
-                            LoadEmployees();
+                            await LoadEmployeesAsync();
                         }
                         else
                         {
@@ -333,6 +386,10 @@ namespace EmployeeManagement
                     PositionComboBox.SelectedValue = employee.position_id;
                     HireDatePicker.SelectedDate = employee.hire_date;
                     SalaryTextBox.Text = employee.salary?.ToString("F2") ?? "";
+                    
+                    // Hide password field when editing (can't change password here)
+                    PasswordBox.IsEnabled = false;
+                    PasswordBox.Clear();
                     
                     // Change Add button to Update mode
                     AddButton.Content = "Update Employee";
@@ -370,6 +427,8 @@ namespace EmployeeManagement
             FirstNameTextBox.Clear();
             LastNameTextBox.Clear();
             EmailTextBox.Clear();
+            PasswordBox.Clear();
+            PasswordBox.IsEnabled = true;  // Re-enable for new employee
             PhoneTextBox.Clear();
             DepartmentComboBox.SelectedIndex = -1;
             PositionComboBox.SelectedIndex = -1;
