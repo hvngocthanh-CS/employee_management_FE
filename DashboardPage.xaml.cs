@@ -74,12 +74,22 @@ namespace EmployeeManagement
                     PresentTodayText.Text = metrics["attendance_today"]["present"].ToString();
                     LateTodayText.Text = metrics["attendance_today"]["late"].ToString();
                     
-                    // Users
-                    ActiveUsersText.Text = metrics["users"]["total"].ToString();
+                    // Users - may be null for Employee role
+                    var usersTotal = metrics["users"]["total"];
+                    ActiveUsersText.Text = usersTotal != null && usersTotal.Type != JTokenType.Null 
+                        ? usersTotal.ToString() 
+                        : "N/A";
                     
-                    // Salary - Format as Vietnamese currency
-                    var avgSalary = decimal.Parse(metrics["salaries"]["average_salary"].ToString());
-                    AverageSalaryText.Text = avgSalary.ToString("N0") + " VND";
+                    // Salary - may be null for Employee role (sensitive data)
+                    var avgSalary = metrics["salaries"]["average_salary"];
+                    if (avgSalary != null && avgSalary.Type != JTokenType.Null)
+                    {
+                        AverageSalaryText.Text = decimal.Parse(avgSalary.ToString()).ToString("N0") + " VND";
+                    }
+                    else
+                    {
+                        AverageSalaryText.Text = "N/A";
+                    }
                 }
                 else
                 {

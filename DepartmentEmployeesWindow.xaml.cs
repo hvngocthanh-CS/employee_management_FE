@@ -21,6 +21,7 @@ namespace EmployeeManagement
         private int _pageSize = 20;
         private string _sortBy = "name";
         private string _order = "asc";
+        private bool _isInitialized = false;
 
         public DepartmentEmployeesWindow(int departmentId, string departmentName)
         {
@@ -28,6 +29,7 @@ namespace EmployeeManagement
             _departmentId = departmentId;
             _departmentName = departmentName;
             TitleTextBlock.Text = $"Employees - {departmentName}";
+            _isInitialized = true;
             LoadEmployees();
         }
 
@@ -102,6 +104,7 @@ namespace EmployeeManagement
 
         private void SortByComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (!_isInitialized) return;
             if (SortByComboBox.SelectedItem is ComboBoxItem item && item.Tag != null)
             {
                 _sortBy = item.Tag.ToString() ?? "name";
@@ -112,6 +115,7 @@ namespace EmployeeManagement
 
         private void OrderComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (!_isInitialized) return;
             if (OrderComboBox.SelectedItem is ComboBoxItem item && item.Tag != null)
             {
                 _order = item.Tag.ToString() ?? "asc";
@@ -122,6 +126,7 @@ namespace EmployeeManagement
 
         private void PageSizeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (!_isInitialized) return;
             if (PageSizeComboBox.SelectedItem is ComboBoxItem item && item.Tag != null)
             {
                 _pageSize = int.Parse(item.Tag.ToString() ?? "20");

@@ -131,7 +131,8 @@
 
                     <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,15,0">
                         <TextBlock Text="Department" Style="{StaticResource InputLabel}"/>
-                        <ComboBox x:Name="DepartmentComboBox" Height="32" ToolTip="Select employee's department"/>
+                        <ComboBox x:Name="DepartmentComboBox" Height="32" ToolTip="Select employee's department"
+                                  SelectionChanged="DepartmentComboBox_SelectionChanged"/>
                     </StackPanel>
 
                     <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,15,0">
@@ -168,8 +169,12 @@
         </Border>
 
         <!-- Employees List -->
-        <StackPanel Grid.Row="2">
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
                 <TextBlock Text="Employee List" 
                           FontSize="18" 
                           FontWeight="Bold" 
@@ -192,9 +197,69 @@
                        Style="{StaticResource ActionButton}"
                        Background="#17A2B8"
                        Foreground="White"/>
+
+                <!-- Salary Filter (Admin/Manager only) -->
+                <StackPanel x:Name="SalaryFilterPanel"
+                           Orientation="Horizontal"
+                           Margin="15,0,0,0"
+                           Visibility="Collapsed">
+                    <TextBlock Text="Salary"
+                              VerticalAlignment="Center"
+                              Margin="0,0,6,0"
+                              FontWeight="SemiBold"
+                              Foreground="#555"/>
+                    <ComboBox x:Name="SalaryOperatorComboBox"
+                             Width="55" Height="32"
+                             SelectedIndex="0"
+                             Padding="5,0">
+                        <ComboBoxItem Content="&gt;="/>
+                        <ComboBoxItem Content="&lt;="/>
+                    </ComboBox>
+                    <TextBox x:Name="SalaryFilterTextBox"
+                            Width="130" Height="32"
+                            Margin="5,0"
+                            Padding="8"
+                            BorderBrush="#DDD"
+                            BorderThickness="1"
+                            ToolTip="Enter salary amount (VND), e.g.: 15000000"/>
+                    <TextBlock Text="Department"
+                              VerticalAlignment="Center"
+                              Margin="10,0,6,0"
+                              Foreground="#555"/>
+                    <ComboBox x:Name="FilterDepartmentComboBox"
+                             Width="130" Height="32"
+                             DisplayMemberPath="name"
+                             SelectedValuePath="id"
+                             ToolTip="Leave empty for all departments"
+                             SelectionChanged="FilterDepartmentComboBox_SelectionChanged"/>
+                    <TextBlock Text="Position"
+                              VerticalAlignment="Center"
+                              Margin="10,0,6,0"
+                              Foreground="#555"/>
+                    <ComboBox x:Name="FilterPositionComboBox"
+                             Width="130" Height="32"
+                             DisplayMemberPath="title"
+                             SelectedValuePath="id"
+                             ToolTip="Leave empty for all positions"/>
+                    <Button Content="Filter"
+                           Click="FilterSalaryButton_Click"
+                           Style="{StaticResource ActionButton}"
+                           Background="#6F42C1"
+                           Foreground="White"
+                           Margin="10,0,4,0"/>
+                    <Button x:Name="ClearSalaryFilterButton"
+                           Content="✖"
+                           Click="ClearSalaryFilterButton_Click"
+                           Style="{StaticResource ActionButton}"
+                           Background="#6C757D"
+                           Foreground="White"
+                           Visibility="Collapsed"
+                           Width="32" Padding="0"/>
+                </StackPanel>
             </StackPanel>
             
             <DataGrid x:Name="EmployeesDataGrid" 
+                     Grid.Row="1"
                      AutoGenerateColumns="False" 
                      CanUserAddRows="False"
                      GridLinesVisibility="Horizontal"
@@ -203,7 +268,9 @@
                      RowBackground="#FFFFFF"
                      AlternatingRowBackground="#F8F9FA"
                      BorderBrush="#DEE2E6"
-                     BorderThickness="1">
+                     BorderThickness="1"
+                     VerticalScrollBarVisibility="Auto"
+                     HorizontalScrollBarVisibility="Auto">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60" IsReadOnly="True"/>
                     <DataGridTextColumn Header="First Name" Binding="{Binding first_name}" Width="120"/>
@@ -238,6 +305,6 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
-        </StackPanel>
+        </Grid>
     </Grid>
 </Page>

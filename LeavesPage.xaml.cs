@@ -45,6 +45,13 @@ namespace EmployeeManagement
                 _selectedEmployeeId = UserSessionService.CurrentUser?.employee_id;
                 // Hide employee name column for employees since they only see their own data
                 LeaveEmployeeColumn.Visibility = Visibility.Collapsed;
+                
+                // Check if user has employee_id - Admin/Manager converted to Employee may not have one
+                if (UserSessionService.CurrentUser?.employee_id == null)
+                {
+                    // Hide leave request panel - can't create leave without employee record
+                    LeaveRequestPanel.Visibility = Visibility.Collapsed;
+                }
             }
             else
             {
@@ -169,6 +176,12 @@ namespace EmployeeManagement
                 string endpoint;
                 if (UserSessionService.IsEmployee)
                 {
+                    // Check if user has employee_id
+                    if (UserSessionService.CurrentUser?.employee_id == null)
+                    {
+                        LoadingLeavesLabel.Visibility = Visibility.Collapsed;
+                        return;
+                    }
                     // Employee sees only their own leaves
                     endpoint = $"{_backendUrl}/api/v1/leaves/my-leaves";
                 }

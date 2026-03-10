@@ -5,18 +5,256 @@
       Background="#ECF0F1">
 
     <Grid Margin="30">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="👤" FontSize="80" HorizontalAlignment="Center" Margin="0,0,0,20"/>
-            <TextBlock Text="Users Management"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Page Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="👥 User Management"
                       FontSize="32"
                       FontWeight="Bold"
-                      Foreground="#2C3E50"
-                      HorizontalAlignment="Center"
-                      Margin="0,0,0,10"/>
-            <TextBlock Text="This feature is coming soon!"
-                      FontSize="16"
+                      Foreground="#2C3E50"/>
+            <TextBlock Text="Manage user accounts and roles (Admin only)"
+                      FontSize="14"
                       Foreground="#7F8C8D"
-                      HorizontalAlignment="Center"/>
+                      Margin="0,5,0,0"/>
         </StackPanel>
+
+        <!-- Actions Bar -->
+        <Grid Grid.Row="1" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Search and Filter -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <TextBox x:Name="SearchTextBox"
+                        Width="250"
+                        Height="35"
+                        Padding="10,5"
+                        FontSize="14"
+                        VerticalContentAlignment="Center"
+                        TextChanged="SearchTextBox_TextChanged">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="">
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <VisualBrush Stretch="None" AlignmentX="Left">
+                                                <VisualBrush.Visual>
+                                                    <TextBlock Text="  🔍 Search username..."
+                                                              Foreground="#95A5A6"
+                                                              FontStyle="Italic"/>
+                                                </VisualBrush.Visual>
+                                            </VisualBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+
+                <ComboBox x:Name="RoleFilterComboBox"
+                         Width="150"
+                         Height="35"
+                         Margin="10,0,0,0"
+                         FontSize="14"
+                         VerticalContentAlignment="Center"
+                         SelectionChanged="RoleFilterComboBox_SelectionChanged">
+                    <ComboBoxItem Content="All Roles" Tag="" IsSelected="True"/>
+                    <ComboBoxItem Content="Admin" Tag="admin"/>
+                    <ComboBoxItem Content="Manager" Tag="manager"/>
+                    <ComboBoxItem Content="Employee" Tag="employee"/>
+                </ComboBox>
+
+                <Button Content="🔄 Refresh"
+                       Width="100"
+                       Height="35"
+                       Margin="10,0,0,0"
+                       Background="#3498DB"
+                       Foreground="White"
+                       BorderThickness="0"
+                       Cursor="Hand"
+                       Click="RefreshButton_Click"/>
+            </StackPanel>
+
+            <!-- Add User Button -->
+            <Button x:Name="AddUserButton"
+                   Grid.Column="1"
+                   Content="➕ Add Admin/Manager"
+                   Height="35"
+                   Padding="15,0"
+                   Background="#27AE60"
+                   Foreground="White"
+                   FontSize="14"
+                   FontWeight="SemiBold"
+                   BorderThickness="0"
+                   Cursor="Hand"
+                   Click="AddUserButton_Click"/>
+        </Grid>
+
+        <!-- Users DataGrid -->
+        <Border Grid.Row="2" 
+               Background="White" 
+               CornerRadius="10"
+               Padding="20">
+            <DataGrid x:Name="UsersDataGrid"
+                     AutoGenerateColumns="False"
+                     HeadersVisibility="Column"
+                     GridLinesVisibility="Horizontal"
+                     Background="White"
+                     RowBackground="White"
+                     AlternatingRowBackground="#F8F9FA"
+                     BorderThickness="0"
+                     CanUserAddRows="False"
+                     IsReadOnly="True"
+                     SelectionMode="Single">
+                
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#34495E"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="Padding" Value="10,8"/>
+                        <Setter Property="FontSize" Value="13"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+                
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#D5E8D4"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" 
+                                       Binding="{Binding id}" 
+                                       Width="60"/>
+                    
+                    <DataGridTextColumn Header="Username" 
+                                       Binding="{Binding username}" 
+                                       Width="150"/>
+                    
+                    <DataGridTemplateColumn Header="Role" Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Padding="5,2" CornerRadius="3"
+                                       HorizontalAlignment="Left">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding role}" Value="admin">
+                                                    <Setter Property="Background" Value="#E74C3C"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding role}" Value="manager">
+                                                    <Setter Property="Background" Value="#F39C12"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding role}" Value="employee">
+                                                    <Setter Property="Background" Value="#3498DB"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="{Binding role}" 
+                                              Foreground="White"
+                                              FontWeight="SemiBold"
+                                              FontSize="11"/>
+                                </Border>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    
+                    <DataGridTemplateColumn Header="Status" Width="80">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock FontWeight="SemiBold">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding is_active}" Value="True">
+                                                    <Setter Property="Text" Value="✅ Active"/>
+                                                    <Setter Property="Foreground" Value="#27AE60"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding is_active}" Value="False">
+                                                    <Setter Property="Text" Value="❌ Inactive"/>
+                                                    <Setter Property="Foreground" Value="#E74C3C"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    
+                    <DataGridTextColumn Header="Employee" 
+                                       Binding="{Binding employee_name}" 
+                                       Width="150"/>
+                    
+                    <DataGridTextColumn Header="Employee Code" 
+                                       Binding="{Binding employee_code}" 
+                                       Width="100"/>
+                    
+                    <DataGridTextColumn Header="Last Login" 
+                                       Binding="{Binding last_login, StringFormat={}{0:dd/MM/yyyy HH:mm}}" 
+                                       Width="130"/>
+                    
+                    <DataGridTextColumn Header="Created" 
+                                       Binding="{Binding created_at, StringFormat={}{0:dd/MM/yyyy}}" 
+                                       Width="100"/>
+                    
+                    <DataGridTemplateColumn Header="Actions" Width="180">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Reset PW"
+                                           Width="60"
+                                           Height="28"
+                                           Margin="2"
+                                           Background="#9B59B6"
+                                           Foreground="White"
+                                           BorderThickness="0"
+                                           Cursor="Hand"
+                                           Click="ResetPassword_Click"
+                                           Tag="{Binding}"/>
+                                    <Button Content="Toggle"
+                                           Width="50"
+                                           Height="28"
+                                           Margin="2"
+                                           Background="#95A5A6"
+                                           Foreground="White"
+                                           BorderThickness="0"
+                                           Cursor="Hand"
+                                           Click="ToggleStatus_Click"
+                                           Tag="{Binding}"
+                                           ToolTip="Activate/Deactivate user"/>
+                                    <Button Content="Delete"
+                                           Width="50"
+                                           Height="28"
+                                           Margin="2"
+                                           Background="#E74C3C"
+                                           Foreground="White"
+                                           BorderThickness="0"
+                                           Cursor="Hand"
+                                           Click="DeleteUser_Click"
+                                           Tag="{Binding}"
+                                           ToolTip="Delete user permanently"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
     </Grid>
 </Page>

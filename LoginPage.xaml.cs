@@ -23,7 +23,7 @@ namespace EmployeeManagement
             // Validation
             if (string.IsNullOrEmpty(identifier) || string.IsNullOrEmpty(password))
             {
-                MessageBox.Show("Please enter both email/username and password.", "Validation Error");
+                MessageBox.Show("Please enter both username and password.", "Validation Error");
                 return;
             }
 
@@ -65,12 +65,6 @@ namespace EmployeeManagement
                 LoadingIndicator.Visibility = Visibility.Hidden;
             }
         }
-        private void RegisterLink_Click(object sender, RoutedEventArgs e)
-        {
-            // Navigate to register page - for admin/manager only
-            var mainWindow = Application.Current.MainWindow as MainWindow;
-            mainWindow?.ShowRegisterPage();
-        }
 
         private void EmailTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
@@ -98,17 +92,20 @@ namespace EmployeeManagement
         #region Demo Login Buttons (for testing different roles)
         private async void AdminDemoButton_Click(object sender, RoutedEventArgs e)
         {
-            await DemoLogin("admin@company.com", "admin123");
+            // Admin uses username, not email
+            await DemoLogin("admin", "admin123");
         }
 
         private async void ManagerDemoButton_Click(object sender, RoutedEventArgs e)
         {
-            await DemoLogin("manager@company.com", "manager123");
+            // Manager uses username, not email
+            await DemoLogin("quynh", "manager123");
         }
 
         private async void EmployeeDemoButton_Click(object sender, RoutedEventArgs e)
         {
-            await DemoLogin("employee@company.com", "employee123");
+            // Employee also uses username
+            await DemoLogin("thanh", "employee123");
         }
 
         private async System.Threading.Tasks.Task DemoLogin(string identifier, string password)

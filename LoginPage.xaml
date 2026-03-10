@@ -107,14 +107,14 @@
 
                 <!-- Login Form -->
                 <StackPanel>
-                    <TextBlock Text="Email / Username" 
+                    <TextBlock Text="Username" 
                               FontSize="14" 
                               FontWeight="SemiBold"
                               Margin="0,0,0,8" 
                               Foreground="#495057"/>
                     <TextBox x:Name="EmailTextBox" 
                             Style="{StaticResource InputTextBox}"
-                            ToolTip="Enter your employee email or username"
+                            ToolTip="Enter your username"
                             KeyDown="EmailTextBox_KeyDown"/>
 
                     <TextBlock Text="Password" 
@@ -144,25 +144,14 @@
                            Content="Sign In" 
                            Style="{StaticResource PrimaryButton}"
                            Click="LoginButton_Click"/>
-
-                    <!-- Register Link for Admin/Manager -->
-                    <Button Content="Admin/Manager? Register here" 
-                           Height="35" 
-                           FontSize="13" 
-                           Background="Transparent" 
-                           Foreground="#007BFF" 
-                           BorderThickness="0"
-                           Click="RegisterLink_Click" 
-                           Cursor="Hand"
-                           Margin="0,5,0,0"/>
                     
-                    <TextBlock Text="Employees: Contact admin for account" 
+                    <TextBlock Text="Contact administrator for new account" 
                               Height="25" 
                               FontSize="11" 
                               Foreground="#6C757D" 
                               TextAlignment="Center"
                               VerticalAlignment="Center"
-                              Margin="0,0,0,10"/>
+                              Margin="0,5,0,10"/>
                 </StackPanel>
 
                 <!-- Demo Section -->

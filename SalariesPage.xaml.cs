@@ -40,6 +40,18 @@ namespace EmployeeManagement
             // Employee role can only view their own salary
             if (UserSessionService.IsEmployee)
             {
+                // Check if user has employee_id - Admin/Manager converted to Employee may not have one
+                if (UserSessionService.CurrentUser?.employee_id == null)
+                {
+                    CurrentSalaryPanel.Visibility = Visibility.Visible;
+                    EmployeeSearchPanel.Visibility = Visibility.Collapsed;
+                    AddSalaryForm.Visibility = Visibility.Collapsed;
+                    EmployeeColumn.Visibility = Visibility.Collapsed;
+                    CurrentSalaryAmount.Text = "N/A - No employee record linked";
+                    EffectiveFromDate.Text = "Contact Admin to link employee";
+                    return;
+                }
+                
                 CurrentSalaryPanel.Visibility = Visibility.Visible;
                 EmployeeSearchPanel.Visibility = Visibility.Collapsed;
                 AddSalaryForm.Visibility = Visibility.Collapsed;
@@ -138,7 +150,7 @@ namespace EmployeeManagement
             try
             {
                 using var httpClient = UserSessionService.GetAuthenticatedHttpClient();
-                var response = await httpClient.GetAsync($"{_backendUrl}/api/v1/salaries/my-salary");
+                var response = await httpClient.GetAsync($"{_backendUrl}/api/v1/salaries/me/current");
                 
                 if (response.IsSuccessStatusCode)
                 {
@@ -188,8 +200,14 @@ namespace EmployeeManagement
                 string endpoint;
                 if (UserSessionService.IsEmployee)
                 {
+                    // Check if user has employee_id
+                    if (UserSessionService.CurrentUser?.employee_id == null)
+                    {
+                        LoadingLabel.Visibility = Visibility.Collapsed;
+                        return;
+                    }
                     // Employee sees only their own salary history
-                    endpoint = $"{_backendUrl}/api/v1/salaries/my-salaries";
+                    endpoint = $"{_backendUrl}/api/v1/salaries/me";
                 }
                 else
                 {

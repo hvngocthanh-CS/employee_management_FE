@@ -93,7 +93,7 @@
                                     Binding="{Binding employee_count}"
                                     Width="100"
                                     IsReadOnly="True"/>
-                <DataGridTemplateColumn Header="Actions" Width="200">
+                <DataGridTemplateColumn x:Name="ActionsColumn" Header="Actions" Width="200">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">

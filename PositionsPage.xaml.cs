@@ -35,8 +35,11 @@ namespace EmployeeManagement
             // Check if user has permission to manage positions
             if (!UserSessionService.CanManagePositions)
             {
+                // Hide Add button for employees
                 AddPositionButton.Visibility = Visibility.Collapsed;
-                // Don't show popup - just hide the button to avoid blocking navigation
+                
+                // Hide Actions column (Edit/Delete) for employees
+                ActionsColumn.Visibility = Visibility.Collapsed;
             }
         }
 

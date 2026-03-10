@@ -37,6 +37,14 @@ namespace EmployeeManagement
             {
                 AddButton.Visibility = Visibility.Collapsed;
             }
+            
+            // Hide Actions column (Statistics/Employees buttons) for Employee role
+            // Only Admin and Manager can view detailed department statistics and employee lists
+            if (UserSessionService.IsEmployee)
+            {
+                ActionsColumn.Visibility = Visibility.Collapsed;
+                CompareButton.Visibility = Visibility.Collapsed;
+            }
         }
 
         private async void LoadDepartments(string searchName = null)
@@ -87,10 +95,11 @@ namespace EmployeeManagement
 
         private void ViewStatistics_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.Tag is int departmentId)
+            if (sender is Button button && button.Tag != null)
             {
                 try
                 {
+                    int departmentId = Convert.ToInt32(button.Tag);
                     var statisticsWindow = new DepartmentStatisticsWindow(departmentId);
                     statisticsWindow.ShowDialog();
                 }
@@ -103,10 +112,12 @@ namespace EmployeeManagement
 
         private void ViewEmployees_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.Tag is int departmentId)
+            if (sender is Button button && button.Tag != null)
             {
                 try
                 {
+                    int departmentId = Convert.ToInt32(button.Tag);
+                    
                     // Get department name from grid
                     var dept = DepartmentsDataGrid.Items.Cast<DepartmentDto>()
                         .FirstOrDefault(d => d.id == departmentId);

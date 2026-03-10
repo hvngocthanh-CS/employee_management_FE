@@ -109,7 +109,7 @@
                     <DataGridTextColumn Header="Description" 
                                        Binding="{Binding Description}" 
                                        Width="*"/>
-                    <DataGridTemplateColumn Header="Actions" Width="150">
+                    <DataGridTemplateColumn x:Name="ActionsColumn" Header="Actions" Width="150">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">

@@ -43,6 +43,23 @@ namespace EmployeeManagement
 
             if (UserSessionService.IsEmployee)
             {
+                // Check if user has employee_id - Admin/Manager converted to Employee may not have one
+                if (UserSessionService.CurrentUser?.employee_id == null)
+                {
+                    CheckInOutPanel.Visibility = Visibility.Visible;
+                    EmployeeSearchPanel.Visibility = Visibility.Collapsed;
+                    EmployeeFilterPanel.Visibility = Visibility.Collapsed;
+                    EmployeeCodeColumn.Visibility = Visibility.Collapsed;
+                    EmployeeNameColumn.Visibility = Visibility.Collapsed;
+                    DepartmentColumn.Visibility = Visibility.Collapsed;
+                    
+                    // Disable check-in/out buttons and show message
+                    CheckInButton.IsEnabled = false;
+                    CheckOutButton.IsEnabled = false;
+                    LastActionLabel.Text = "N/A - No employee record linked. Contact Admin.";
+                    return;
+                }
+                
                 // Employee: Show check-in/check-out panel, hide search and employee columns
                 CheckInOutPanel.Visibility = Visibility.Visible;
                 EmployeeSearchPanel.Visibility = Visibility.Collapsed;
@@ -408,6 +425,13 @@ namespace EmployeeManagement
                 string endpoint;
                 if (UserSessionService.IsEmployee)
                 {
+                    // Check if user has employee_id
+                    if (UserSessionService.CurrentUser?.employee_id == null)
+                    {
+                        LoadingLabel.Visibility = Visibility.Collapsed;
+                        _isLoadingAttendance = false;
+                        return;
+                    }
                     endpoint = $"{_backendUrl}/api/v1/attendances/my-attendances";
                 }
                 else
@@ -510,6 +534,15 @@ namespace EmployeeManagement
 
         private async void UpdateCheckInOutStatus()
         {
+            // Check if user has employee_id
+            if (UserSessionService.CurrentUser?.employee_id == null)
+            {
+                LastActionLabel.Text = "N/A - No employee record linked";
+                CheckInButton.IsEnabled = false;
+                CheckOutButton.IsEnabled = false;
+                return;
+            }
+            
             try
             {
                 using var httpClient = UserSessionService.GetAuthenticatedHttpClient();

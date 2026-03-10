@@ -52,6 +52,12 @@ namespace EmployeeManagement
                 AddButton.Visibility = Visibility.Collapsed;
                 ClearButton.Visibility = Visibility.Collapsed;
             }
+
+            // Show salary filter for Admin and Manager only
+            if (UserSessionService.IsAdmin || UserSessionService.IsManager)
+            {
+                SalaryFilterPanel.Visibility = Visibility.Visible;
+            }
         }
 
         #region Data Models
@@ -90,6 +96,7 @@ namespace EmployeeManagement
             public int id { get; set; }
             public string title { get; set; } = "";
             public string description { get; set; } = "";
+            public int? department_id { get; set; }
         }
         #endregion
 
@@ -111,6 +118,8 @@ namespace EmployeeManagement
                     DepartmentComboBox.ItemsSource = _departments;
                     DepartmentComboBox.DisplayMemberPath = "name";
                     DepartmentComboBox.SelectedValuePath = "id";
+                    // Also bind to filter panel dropdown
+                    FilterDepartmentComboBox.ItemsSource = _departments;
                 }
                 else
                 {
@@ -141,6 +150,8 @@ namespace EmployeeManagement
                     PositionComboBox.ItemsSource = _positions;
                     PositionComboBox.DisplayMemberPath = "title";
                     PositionComboBox.SelectedValuePath = "id";
+                    // Also bind to filter panel dropdown
+                    FilterPositionComboBox.ItemsSource = _positions;
                 }
                 else
                 {
@@ -152,6 +163,55 @@ namespace EmployeeManagement
             {
                 MessageBox.Show($"Lỗi khi tải chức vụ: {ex.Message}", "Lỗi");
             }
+        }
+
+        // Khi chọn phòng ban ở form Add Employee → lọc vị trí tương ứng
+        private async void DepartmentComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            PositionComboBox.SelectedIndex = -1;
+            if (DepartmentComboBox.SelectedValue is int deptId)
+            {
+                var filtered = await FetchPositionsByDepartmentAsync(deptId);
+                PositionComboBox.ItemsSource = filtered;
+            }
+            else
+            {
+                PositionComboBox.ItemsSource = _positions;
+            }
+        }
+
+        // Khi chọn phòng ban ở filter panel → lọc vị trí trong FilterPositionComboBox
+        private async void FilterDepartmentComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            FilterPositionComboBox.SelectedIndex = -1;
+            if (FilterDepartmentComboBox.SelectedValue is int deptId)
+            {
+                var filtered = await FetchPositionsByDepartmentAsync(deptId);
+                FilterPositionComboBox.ItemsSource = filtered;
+            }
+            else
+            {
+                FilterPositionComboBox.ItemsSource = _positions;
+            }
+        }
+
+        private async Task<List<Position>> FetchPositionsByDepartmentAsync(int departmentId)
+        {
+            try
+            {
+                using var httpClient = UserSessionService.GetAuthenticatedHttpClient();
+                var response = await httpClient.GetAsync($"{_backendUrl}/api/v1/positions/?department_id={departmentId}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonContent = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<List<Position>>(jsonContent, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }) ?? new List<Position>();
+                }
+            }
+            catch { }
+            return new List<Position>();
         }
 
         private async Task LoadEmployeesAsync()
@@ -342,6 +402,90 @@ namespace EmployeeManagement
 
         private async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
+            await LoadEmployeesAsync();
+        }
+
+        private async void FilterSalaryButton_Click(object sender, RoutedEventArgs e)
+        {
+            var text = SalaryFilterTextBox.Text.Trim().Replace(",", "").Replace(".", "");
+            decimal? salaryValue = null;
+            
+            // Salary is optional - only parse if provided
+            if (!string.IsNullOrEmpty(text))
+            {
+                if (!decimal.TryParse(text, out decimal parsed) || parsed < 0)
+                {
+                    MessageBox.Show("Please enter a valid salary (e.g., 15000000)", "Error");
+                    return;
+                }
+                salaryValue = parsed;
+            }
+
+            // Build query - at least one filter must be set
+            var queryParams = new System.Text.StringBuilder();
+            bool hasFilter = false;
+
+            if (salaryValue.HasValue)
+            {
+                var op = (SalaryOperatorComboBox.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Content?.ToString() ?? ">=";
+                string paramName = op == ">=" ? "min_salary" : "max_salary";
+                queryParams.Append($"?{paramName}={salaryValue.Value}");
+                hasFilter = true;
+            }
+
+            if (FilterDepartmentComboBox.SelectedValue is int deptId)
+            {
+                queryParams.Append(hasFilter ? "&" : "?");
+                queryParams.Append($"department_id={deptId}");
+                hasFilter = true;
+            }
+
+            if (FilterPositionComboBox.SelectedValue is int posId)
+            {
+                queryParams.Append(hasFilter ? "&" : "?");
+                queryParams.Append($"position_id={posId}");
+                hasFilter = true;
+            }
+
+            if (!hasFilter)
+            {
+                MessageBox.Show("Please select at least one filter (Salary, Department, or Position)", "No filter");
+                return;
+            }
+
+            try
+            {
+                using var httpClient = UserSessionService.GetAuthenticatedHttpClient();
+                var response = await httpClient.GetAsync($"{_backendUrl}/api/v1/employees/filter/by-salary{queryParams}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonContent = await response.Content.ReadAsStringAsync();
+                    var employees = JsonSerializer.Deserialize<List<Employee>>(jsonContent, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }) ?? new List<Employee>();
+
+                    EmployeesDataGrid.ItemsSource = employees;
+                    ClearSalaryFilterButton.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    MessageBox.Show($"Error: {error}", "Cannot filter");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Connection error: {ex.Message}", "Error");
+            }
+        }
+
+        private async void ClearSalaryFilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            SalaryFilterTextBox.Clear();
+            FilterDepartmentComboBox.SelectedIndex = -1;
+            FilterPositionComboBox.SelectedIndex = -1;
+            ClearSalaryFilterButton.Visibility = Visibility.Collapsed;
             await LoadEmployeesAsync();
         }
 
