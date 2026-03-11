@@ -63,6 +63,7 @@ namespace EmployeeManagement
         #region Data Models
         public class Employee
         {
+            public int RowNumber { get; set; }  // For STT column
             public int Id { get; set; }
             public string first_name { get; set; } = "";
             public string last_name { get; set; } = "";
@@ -249,10 +250,12 @@ namespace EmployeeManagement
                     }
 
                     _employees.Clear();
+                    int idx = 1;
                     foreach (var employee in employees)
                     {
                         // Backend now returns department_name and position_title directly
                         // No need to manually map from _departments and _positions
+                        employee.RowNumber = idx++;
                         _employees.Add(employee);
                     }
 
@@ -564,6 +567,8 @@ namespace EmployeeManagement
             
             if (string.IsNullOrWhiteSpace(searchText))
             {
+                for (int i = 0; i < _employees.Count; i++)
+                    _employees[i].RowNumber = i + 1;
                 EmployeesDataGrid.ItemsSource = _employees;
             }
             else
@@ -574,7 +579,8 @@ namespace EmployeeManagement
                     emp.email.ToLower().Contains(searchText) ||
                     (emp.phone ?? "").ToLower().Contains(searchText)
                 ).ToList();
-                
+                for (int i = 0; i < filteredEmployees.Count; i++)
+                    filteredEmployees[i].RowNumber = i + 1;
                 EmployeesDataGrid.ItemsSource = filteredEmployees;
             }
         }
@@ -610,6 +616,15 @@ namespace EmployeeManagement
             catch
             {
                 return false;
+            }
+        }
+
+        private void DataGrid_LoadingRow(object sender, System.Windows.Controls.DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+            if (e.Row.DataContext is Employee emp)
+            {
+                emp.RowNumber = e.Row.GetIndex() + 1;
             }
         }
         #endregion

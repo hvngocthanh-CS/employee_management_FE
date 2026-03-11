@@ -4,8 +4,7 @@
       Title="Leaves Management"
       Background="#ECF0F1">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <Grid Margin="20">
+    <Grid Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -245,9 +244,12 @@
                              GridLinesVisibility="Horizontal"
                              HeadersVisibility="Column"
                              AlternatingRowBackground="#F8F9FA"
-                             Margin="15,0,15,15">
+                             Margin="15,0,15,15"
+                             ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                             LoadingRow="DataGrid_LoadingRow">
 
                         <DataGrid.Columns>
+                            <DataGridTextColumn Header="STT" Binding="{Binding RowNumber}" Width="50"/>
                             <DataGridTextColumn Header="Type" 
                                                Binding="{Binding leave_type}"
                                                Width="120"/>
@@ -320,6 +322,5 @@
                     </DataGrid>
                 </Grid>
             </Border>
-        </Grid>
-    </ScrollViewer>
+    </Grid>
 </Page>

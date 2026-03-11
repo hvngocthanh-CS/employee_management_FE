@@ -92,8 +92,11 @@
                      Background="White"
                      RowBackground="White"
                      AlternatingRowBackground="#F8F9FA"
-                     BorderThickness="0">
+                     BorderThickness="0"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                     LoadingRow="DataGrid_LoadingRow">
                 <DataGrid.Columns>
+                    <DataGridTextColumn Header="STT" Binding="{Binding RowNumber}" Width="50"/>
                     <DataGridTextColumn Header="ID" 
                                        Binding="{Binding Id}" 
                                        Width="60"/>

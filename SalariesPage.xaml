@@ -5,8 +5,7 @@
       Title="Salaries Management"
       Background="#ECF0F1">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <Grid Margin="20">
+    <Grid Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -335,9 +334,12 @@
                              GridLinesVisibility="Horizontal"
                              HeadersVisibility="Column"
                              AlternatingRowBackground="#F8F9FA"
-                             Margin="15,0,15,15">
+                             Margin="15,0,15,15"
+                             ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                             LoadingRow="DataGrid_LoadingRow">
 
                         <DataGrid.Columns>
+                            <DataGridTextColumn Header="STT" Binding="{Binding RowNumber}" Width="50"/>
                             <DataGridTextColumn Header="Effective From" 
                                                Binding="{Binding effective_from, StringFormat='{}{0:dd/MM/yyyy}'}"
                                                Width="120"/>
@@ -349,8 +351,14 @@
                                                Width="180"/>
                             <DataGridTextColumn Header="Employee" 
                                                Binding="{Binding employee_name}"
-                                               Width="*"
+                                               Width="200"
                                                x:Name="EmployeeColumn"/>
+                            <DataGridTextColumn Header="Username" 
+                                               Binding="{Binding username}"
+                                               Width="150"/>
+                            <DataGridTextColumn Header="Role" 
+                                               Binding="{Binding role}"
+                                               Width="100"/>
                             
                             <!-- Actions Column (Manager/Admin only) -->
                             <DataGridTemplateColumn Header="Actions" Width="150">
@@ -389,6 +397,5 @@
                     </DataGrid>
                 </Grid>
             </Border>
-        </Grid>
-    </ScrollViewer>
+    </Grid>
 </Page>

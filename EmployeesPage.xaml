@@ -270,8 +270,11 @@
                      BorderBrush="#DEE2E6"
                      BorderThickness="1"
                      VerticalScrollBarVisibility="Auto"
-                     HorizontalScrollBarVisibility="Auto">
+                     HorizontalScrollBarVisibility="Auto"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                     LoadingRow="DataGrid_LoadingRow">
                 <DataGrid.Columns>
+                    <DataGridTextColumn Header="STT" Binding="{Binding RowNumber}" Width="50" IsReadOnly="True"/>
                     <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60" IsReadOnly="True"/>
                     <DataGridTextColumn Header="First Name" Binding="{Binding first_name}" Width="120"/>
                     <DataGridTextColumn Header="Last Name" Binding="{Binding last_name}" Width="120"/>

@@ -73,6 +73,10 @@ namespace EmployeeManagement
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
                 );
 
+                if (departments != null)
+                    for (int i = 0; i < departments.Count; i++)
+                        departments[i].RowNumber = i + 1;
+
                 DepartmentsDataGrid.ItemsSource = departments;
             }
             catch (Exception ex)
@@ -249,6 +253,15 @@ namespace EmployeeManagement
                 MessageBox.Show($"Error: {ex.Message}");
             }
         }
+
+        private void DataGrid_LoadingRow(object sender, System.Windows.Controls.DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+            if (e.Row.DataContext is DepartmentDto department)
+            {
+                department.RowNumber = e.Row.GetIndex() + 1;
+            }
+        }
     }
 
     // DTO matching FastAPI response (snake_case)
@@ -258,5 +271,6 @@ namespace EmployeeManagement
         public string name { get; set; } = string.Empty;
         public int employee_count { get; set; }
         public double avg_salary { get; set; }
+        public int RowNumber { get; set; }
     }
 }

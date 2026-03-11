@@ -86,6 +86,7 @@ namespace EmployeeManagement
             public string employee_name { get; set; } = "";
             public string employee_code { get; set; } = "";
             public string department_name { get; set; } = "";
+            public int RowNumber { get; set; }
         }
 
         public class LeaveRequest
@@ -198,6 +199,9 @@ namespace EmployeeManagement
                     endpoint += $"?status={selectedStatus}";
                 }
 
+                // Ensure all records are loaded
+                endpoint += (endpoint.Contains("?") ? "&" : "?") + "limit=10000";
+
                 var response = await httpClient.GetAsync(endpoint);
                 if (response.IsSuccessStatusCode)
                 {
@@ -223,8 +227,10 @@ namespace EmployeeManagement
                     // Sort by created_at date descending (newest first)
                     leaves = leaves.OrderByDescending(l => l.created_at).ToList();
 
+                    int idx = 1;
                     foreach (var leave in leaves)
                     {
+                        leave.RowNumber = idx++;
                         _leaveRecords.Add(leave);
                     }
                 }
@@ -250,41 +256,15 @@ namespace EmployeeManagement
 
         private void UpdateActionButtonsVisibility()
         {
-            // Use dispatcher to ensure DataGrid is fully rendered
+            // Refresh all currently visible rows (handles initial load)
             Dispatcher.InvokeAsync(() =>
             {
                 LeaveDataGrid.UpdateLayout();
-                
                 for (int i = 0; i < LeaveDataGrid.Items.Count; i++)
                 {
                     var row = (DataGridRow)LeaveDataGrid.ItemContainerGenerator.ContainerFromIndex(i);
                     if (row != null && row.Item is LeaveRecord record)
-                    {
-                        var approveButton = FindVisualChild<Button>(row, "ApproveButton");
-                        var rejectButton = FindVisualChild<Button>(row, "RejectButton");
-                        var deleteButton = FindVisualChild<Button>(row, "DeleteButton");
-
-                        // Only show Approve/Reject for pending leaves to Manager/Admin
-                        bool isPending = record.status?.ToLower() == "pending";
-                        bool canApprove = (UserSessionService.IsManager || UserSessionService.IsAdmin) && isPending;
-
-                        if (approveButton != null)
-                        {
-                            approveButton.Visibility = canApprove ? Visibility.Visible : Visibility.Collapsed;
-                        }
-
-                        if (rejectButton != null)
-                        {
-                            rejectButton.Visibility = canApprove ? Visibility.Visible : Visibility.Collapsed;
-                        }
-
-                        if (deleteButton != null)
-                        {
-                            // Only Admin can delete
-                            deleteButton.Visibility = UserSessionService.IsAdmin 
-                                ? Visibility.Visible : Visibility.Collapsed;
-                        }
-                    }
+                        UpdateLeaveRowButtons(row, record);
                 }
             }, System.Windows.Threading.DispatcherPriority.Loaded);
         }
@@ -581,6 +561,36 @@ namespace EmployeeManagement
                     }
                 }
             }
+        }
+
+        private void DataGrid_LoadingRow(object sender, System.Windows.Controls.DataGridRowEventArgs e)
+        {
+            if (e.Row.DataContext is LeaveRecord leave)
+            {
+                leave.RowNumber = e.Row.GetIndex() + 1;
+            }
+
+            // Defer so DataTemplate cells are fully applied before searching for named buttons
+            // This handles both initial render AND virtualization recycling (scrolling)
+            e.Row.Dispatcher.BeginInvoke(() =>
+            {
+                if (e.Row.DataContext is LeaveRecord record)
+                    UpdateLeaveRowButtons(e.Row, record);
+            }, System.Windows.Threading.DispatcherPriority.DataBind);
+        }
+
+        private void UpdateLeaveRowButtons(DataGridRow row, LeaveRecord record)
+        {
+            var approveButton = FindVisualChild<Button>(row, "ApproveButton");
+            var rejectButton  = FindVisualChild<Button>(row, "RejectButton");
+            var deleteButton  = FindVisualChild<Button>(row, "DeleteButton");
+
+            bool isPending       = record.status?.ToLower() == "pending";
+            bool canApproveReject = (UserSessionService.IsManager || UserSessionService.IsAdmin) && isPending;
+
+            if (approveButton != null) approveButton.Visibility = canApproveReject      ? Visibility.Visible : Visibility.Collapsed;
+            if (rejectButton  != null) rejectButton.Visibility  = canApproveReject      ? Visibility.Visible : Visibility.Collapsed;
+            if (deleteButton  != null) deleteButton.Visibility  = UserSessionService.IsAdmin ? Visibility.Visible : Visibility.Collapsed;
         }
         #endregion
     }

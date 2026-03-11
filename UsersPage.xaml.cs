@@ -36,6 +36,7 @@ namespace EmployeeManagement
             public string? employee_email { get; set; }
             public DateTime? last_login { get; set; }
             public DateTime? created_at { get; set; }
+            public int RowNumber { get; set; }
         }
 
         public class UserListResponse
@@ -125,6 +126,8 @@ namespace EmployeeManagement
                 (u.employee_code?.ToLower().Contains(searchTerm) ?? false)
             ).ToList();
 
+            for (int i = 0; i < filtered.Count; i++)
+                filtered[i].RowNumber = i + 1;
             UsersDataGrid.ItemsSource = filtered;
         }
         #endregion
@@ -343,6 +346,15 @@ namespace EmployeeManagement
             {
                 MessageBox.Show($"Error: {ex.Message}", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void DataGrid_LoadingRow(object sender, System.Windows.Controls.DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+            if (e.Row.DataContext is UserDto user)
+            {
+                user.RowNumber = e.Row.GetIndex() + 1;
             }
         }
         #endregion

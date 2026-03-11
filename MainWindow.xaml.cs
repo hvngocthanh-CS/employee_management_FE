@@ -56,9 +56,41 @@ namespace EmployeeManagement
         {
             if (UserSessionService.IsAuthenticated && UserSessionService.CurrentUser != null)
             {
-                UsernameLabel.Text = UserSessionService.GetWelcomeMessage();
+                var user = UserSessionService.CurrentUser;
+                var initial = string.IsNullOrEmpty(user.username) ? "U" : user.username[0].ToString().ToUpper();
+                var roleDisplay = UserSessionService.GetRoleDisplayName(user.role);
+
+                // Top bar
+                UserInitialLabel.Text = initial;
+                UsernameLabel.Text = user.username;
+
+                // Popup
+                PopupInitialLabel.Text = initial;
+                PopupUsernameLabel.Text = user.username;
+                PopupRoleLabel.Text = roleDisplay;
+                PopupUserIdLabel.Text = user.id.ToString();
+                PopupStatusLabel.Text = user.is_active ? "Active" : "Inactive";
+                PopupStatusLabel.Foreground = user.is_active
+                    ? new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(39, 174, 96))
+                    : new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(231, 76, 60));
+
+                if (user.employee_id.HasValue)
+                {
+                    PopupEmployeeRow.Visibility = Visibility.Visible;
+                    PopupEmployeeIdLabel.Text = user.employee_id.Value.ToString();
+                }
+                else
+                {
+                    PopupEmployeeRow.Visibility = Visibility.Collapsed;
+                }
+
                 UserInfoPanel.Visibility = Visibility.Visible;
             }
+        }
+
+        private void UserAvatarButton_Click(object sender, RoutedEventArgs e)
+        {
+            UserInfoPopup.IsOpen = !UserInfoPopup.IsOpen;
         }
 
         private void UpdateMenuVisibility()

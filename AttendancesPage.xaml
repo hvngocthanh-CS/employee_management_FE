@@ -4,8 +4,7 @@
       Title="Attendance Management"
       Background="#ECF0F1">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <Grid Margin="20">
+    <Grid Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -227,31 +226,35 @@
                              RowBackground="White"
                              AlternatingRowBackground="#F8F9FA"
                              BorderThickness="0"
-                             Margin="15">
+                             Margin="15"
+                             RowHeight="36"
+                             ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                             LoadingRow="DataGrid_LoadingRow">
                         <DataGrid.Columns>
+                            <DataGridTextColumn Header="STT" Binding="{Binding RowNumber}" Width="45"/>
                             <DataGridTextColumn Header="Date" 
                                                Binding="{Binding attendance_date, StringFormat=dd/MM/yyyy}" 
                                                Width="100"/>
                             
                             <DataGridTextColumn Header="Employee Code" 
                                                Binding="{Binding employee_code}" 
-                                               Width="120"
+                                               Width="110"
                                                x:Name="EmployeeCodeColumn"/>
                             
                             <DataGridTextColumn Header="Employee Name" 
                                                Binding="{Binding employee_name}" 
                                                Width="*"
-                                               MinWidth="150"
+                                               MinWidth="160"
                                                x:Name="EmployeeNameColumn"/>
                             
                             <DataGridTextColumn Header="Department" 
                                                Binding="{Binding department_name}" 
-                                               Width="120"
+                                               Width="130"
                                                x:Name="DepartmentColumn"/>
                             
                             <DataGridTextColumn Header="Check In" 
                                                Binding="{Binding CheckInDisplay}" 
-                                               Width="80"/>
+                                               Width="75"/>
                             
                             <DataGridTextColumn Header="Check Out" 
                                                Binding="{Binding CheckOutDisplay}" 
@@ -263,10 +266,10 @@
                             
                             <DataGridTextColumn Header="Status" 
                                                Binding="{Binding status}" 
-                                               Width="80"/>
+                                               Width="90"/>
                             
                             <!-- Actions Column -->
-                            <DataGridTemplateColumn Header="Actions" Width="Auto">
+                            <DataGridTemplateColumn Header="Actions" Width="150">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -315,6 +318,5 @@
                               Visibility="Collapsed"/>
                 </Grid>
             </Border>
-        </Grid>
-    </ScrollViewer>
+    </Grid>
 </Page>

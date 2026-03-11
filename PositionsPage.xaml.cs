@@ -54,6 +54,9 @@ namespace EmployeeManagement
                 {
                     var content = await response.Content.ReadAsStringAsync();
                     var positions = JsonConvert.DeserializeObject<List<Position>>(content);
+                    if (positions != null)
+                        for (int i = 0; i < positions.Count; i++)
+                            positions[i].RowNumber = i + 1;
                     PositionsDataGrid.ItemsSource = positions;
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
@@ -84,6 +87,8 @@ namespace EmployeeManagement
                     p.Title.ToLower().Contains(searchTerm) ||
                     p.Code.ToLower().Contains(searchTerm) ||
                     p.Level.ToLower().Contains(searchTerm));
+                for (int i = 0; i < filteredPositions.Count; i++)
+                    filteredPositions[i].RowNumber = i + 1;
                 PositionsDataGrid.ItemsSource = filteredPositions;
             }
         }
@@ -213,6 +218,15 @@ namespace EmployeeManagement
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }  
         }
+
+        private void DataGrid_LoadingRow(object sender, System.Windows.Controls.DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+            if (e.Row.DataContext is Position position)
+            {
+                position.RowNumber = e.Row.GetIndex() + 1;
+            }
+        }
     }
 
     // Position data model
@@ -223,6 +237,7 @@ namespace EmployeeManagement
         public string Code { get; set; } = string.Empty;
         public string Level { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public int RowNumber { get; set; }
     }
 
     // Placeholder for Add/Edit dialog - this would need to be implemented

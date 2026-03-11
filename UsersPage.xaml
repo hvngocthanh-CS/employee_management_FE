@@ -114,7 +114,9 @@
                      BorderThickness="0"
                      CanUserAddRows="False"
                      IsReadOnly="True"
-                     SelectionMode="Single">
+                     SelectionMode="Single"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                     LoadingRow="DataGrid_LoadingRow">
                 
                 <DataGrid.ColumnHeaderStyle>
                     <Style TargetType="DataGridColumnHeader">
@@ -137,6 +139,7 @@
                 </DataGrid.RowStyle>
 
                 <DataGrid.Columns>
+                    <DataGridTextColumn Header="STT" Binding="{Binding RowNumber}" Width="50"/>
                     <DataGridTextColumn Header="ID" 
                                        Binding="{Binding id}" 
                                        Width="60"/>

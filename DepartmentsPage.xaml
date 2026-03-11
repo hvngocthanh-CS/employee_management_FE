@@ -77,8 +77,11 @@
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   SelectionMode="Extended"
-                  SelectionUnit="FullRow">
+                  SelectionUnit="FullRow"
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                  LoadingRow="DataGrid_LoadingRow">
             <DataGrid.Columns>
+                <DataGridTextColumn Header="STT" Binding="{Binding RowNumber}" Width="50" IsReadOnly="True"/>
                 <DataGridCheckBoxColumn Header="Select"
                                         Width="50"/>
                 <DataGridTextColumn Header="ID"

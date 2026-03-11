@@ -50,25 +50,132 @@
                           Margin="20,0"/>
 
                 <!-- User Info and Logout -->
-                <StackPanel Grid.Column="1" 
+                <StackPanel Grid.Column="1"
                            Orientation="Horizontal"
                            VerticalAlignment="Center"
                            Margin="10,0,20,0"
                            x:Name="UserInfoPanel"
                            Visibility="Collapsed">
-                    <TextBlock x:Name="UsernameLabel"
-                              Text="Welcome, User"
-                              Foreground="White"
-                              VerticalAlignment="Center"
-                              Margin="0,0,15,0"/>
-                    <Button x:Name="LogoutButton"
-                           Click="LogoutButton_Click"
-                           Content="Logout"
-                           Padding="10,5"
-                           Background="#E74C3C"
-                           Foreground="White"
+
+                    <!-- Clickable user avatar button -->
+                    <Button x:Name="UserAvatarButton"
+                           Click="UserAvatarButton_Click"
+                           Background="Transparent"
                            BorderThickness="0"
-                           Cursor="Hand"/>
+                           Cursor="Hand"
+                           Padding="6,4">
+                        <StackPanel Orientation="Horizontal">
+                            <Border Width="30" Height="30" CornerRadius="15" Background="#3498DB" Margin="0,0,8,0">
+                                <TextBlock x:Name="UserInitialLabel"
+                                          Text="U"
+                                          FontWeight="Bold"
+                                          Foreground="White"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          FontSize="13"/>
+                            </Border>
+                            <TextBlock x:Name="UsernameLabel"
+                                      Text="User"
+                                      Foreground="White"
+                                      VerticalAlignment="Center"
+                                      FontSize="13"/>
+                            <TextBlock Text=" ▾"
+                                      Foreground="#BDC3C7"
+                                      VerticalAlignment="Center"
+                                      FontSize="11"
+                                      Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- User Info Popup -->
+                    <Popup x:Name="UserInfoPopup"
+                           PlacementTarget="{Binding ElementName=UserAvatarButton}"
+                           Placement="Bottom"
+                           StaysOpen="False"
+                           AllowsTransparency="True"
+                           PopupAnimation="Fade">
+                        <Border Background="White"
+                                BorderBrush="#BDC3C7"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Width="270"
+                                Margin="0,4,0,0">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="12" ShadowDepth="3" Opacity="0.15" Color="Black"/>
+                            </Border.Effect>
+                            <StackPanel Margin="16,14">
+
+                                <!-- Avatar + name header -->
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                    <Border Width="44" Height="44" CornerRadius="22" Background="#3498DB" Margin="0,0,12,0">
+                                        <TextBlock x:Name="PopupInitialLabel"
+                                                  Text="U"
+                                                  FontWeight="Bold"
+                                                  Foreground="White"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  FontSize="20"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock x:Name="PopupUsernameLabel"
+                                                  Text="Username"
+                                                  FontWeight="Bold"
+                                                  FontSize="15"
+                                                  Foreground="#2C3E50"/>
+                                        <TextBlock x:Name="PopupRoleLabel"
+                                                  Text="Role"
+                                                  FontSize="12"
+                                                  Foreground="#7F8C8D"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- Divider -->
+                                <Border Height="1" Background="#ECF0F1" Margin="0,0,0,10"/>
+
+                                <!-- Info rows -->
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="90"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="User ID:" Foreground="#95A5A6" FontSize="12"/>
+                                    <TextBlock x:Name="PopupUserIdLabel" Grid.Column="1" Text="-" Foreground="#2C3E50" FontSize="12"/>
+                                </Grid>
+                                <Grid x:Name="PopupEmployeeRow" Margin="0,0,0,6" Visibility="Collapsed">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="90"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="Employee ID:" Foreground="#95A5A6" FontSize="12"/>
+                                    <TextBlock x:Name="PopupEmployeeIdLabel" Grid.Column="1" Text="-" Foreground="#2C3E50" FontSize="12"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="90"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="Status:" Foreground="#95A5A6" FontSize="12"/>
+                                    <TextBlock x:Name="PopupStatusLabel" Grid.Column="1" Text="Active" Foreground="#27AE60" FontSize="12" FontWeight="Bold"/>
+                                </Grid>
+
+                                <!-- Divider -->
+                                <Border Height="1" Background="#ECF0F1" Margin="0,0,0,10"/>
+
+                                <!-- Logout -->
+                                <Button x:Name="LogoutButton"
+                                       Click="LogoutButton_Click"
+                                       Content="🚪  Sign Out"
+                                       HorizontalAlignment="Stretch"
+                                       Padding="10,8"
+                                       Background="#E74C3C"
+                                       Foreground="White"
+                                       BorderThickness="0"
+                                       Cursor="Hand"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Border>
+                    </Popup>
                 </StackPanel>
             </Grid>
         </Border>

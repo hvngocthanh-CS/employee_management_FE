@@ -39,6 +39,10 @@ namespace EmployeeManagement
                 return;
             }
 
+            // Default to current month so initial load is fast
+            StartDatePicker.SelectedDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+            EndDatePicker.SelectedDate = DateTime.Today;
+
             AttendanceDataGrid.ItemsSource = _attendanceRecords;
 
             if (UserSessionService.IsEmployee)
@@ -101,6 +105,7 @@ namespace EmployeeManagement
             public string employee_name { get; set; } = "";
             public string employee_code { get; set; } = "";
             public string department_name { get; set; } = "";
+            public int RowNumber { get; set; }
             
             // Formatted time properties for display
             public string CheckInDisplay => FormatTime(check_in_time);
@@ -444,6 +449,9 @@ namespace EmployeeManagement
                     }
                 }
 
+                // Ensure all records are loaded
+                endpoint += (endpoint.Contains("?") ? "&" : "?") + "limit=10000";
+
                 // Add date filters
                 var urlParams = new List<string>();
                 if (endpoint.Contains("?"))
@@ -477,8 +485,10 @@ namespace EmployeeManagement
 
                     attendances = attendances.OrderByDescending(a => a.attendance_date).ToList();
 
+                    int idx = 1;
                     foreach (var attendance in attendances)
                     {
+                        attendance.RowNumber = idx++;
                         _attendanceRecords.Add(attendance);
                     }
                 }
@@ -940,12 +950,37 @@ namespace EmployeeManagement
 
                 if (response.IsSuccessStatusCode)
                 {
+                    var jsonContent = await response.Content.ReadAsStringAsync();
                     MessageBox.Show(
                         existing == null ? "Attendance added successfully!" : "Attendance updated successfully!",
                         "Success", MessageBoxButton.OK, MessageBoxImage.Information
                     );
                     dialog.Close();
-                    LoadAttendanceRecords();
+
+                    if (existing != null)
+                    {
+                        // Update in-place to preserve row position and scroll
+                        var updatedRecord = JsonSerializer.Deserialize<AttendanceRecord>(jsonContent,
+                            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        if (updatedRecord != null)
+                        {
+                            var idx = _attendanceRecords.IndexOf(existing);
+                            if (idx >= 0)
+                            {
+                                updatedRecord.RowNumber = existing.RowNumber;
+                                _attendanceRecords[idx] = updatedRecord;
+                                AttendanceDataGrid.ScrollIntoView(_attendanceRecords[idx]);
+                            }
+                            else
+                            {
+                                LoadAttendanceRecords();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        LoadAttendanceRecords();
+                    }
                 }
                 else
                 {
@@ -958,6 +993,15 @@ namespace EmployeeManagement
             {
                 MessageBox.Show($"Error saving attendance: {ex.Message}",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void DataGrid_LoadingRow(object sender, System.Windows.Controls.DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+            if (e.Row.DataContext is AttendanceRecord attendance)
+            {
+                attendance.RowNumber = e.Row.GetIndex() + 1;
             }
         }
         #endregion

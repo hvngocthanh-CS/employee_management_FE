@@ -83,6 +83,9 @@ namespace EmployeeManagement
             public string notes { get; set; } = "";
             public string employee_name { get; set; } = "";
             public string employee_code { get; set; } = "";
+            public string username { get; set; } = "";
+            public string role { get; set; } = "";
+            public int RowNumber { get; set; }
             
             // Helper property to get display amount
             public decimal DisplayAmount => base_salary ?? amount ?? 0;
@@ -226,8 +229,10 @@ namespace EmployeeManagement
                     // Sort by effective_from date descending (newest first)
                     salaries = salaries.OrderByDescending(s => s.effective_from).ToList();
 
+                    int idx = 1;
                     foreach (var salary in salaries)
                     {
+                        salary.RowNumber = idx++;
                         _salaryRecords.Add(salary);
                     }
                 }
@@ -568,6 +573,15 @@ namespace EmployeeManagement
                 EmployeeSearchResults.ItemsSource = null;
                 EmployeeSearchResults.Visibility = Visibility.Collapsed;
                 EmployeeSearchBox.Clear();
+            }
+        }
+
+        private void DataGrid_LoadingRow(object sender, System.Windows.Controls.DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+            if (e.Row.DataContext is SalaryRecord salary)
+            {
+                salary.RowNumber = e.Row.GetIndex() + 1;
             }
         }
         #endregion
